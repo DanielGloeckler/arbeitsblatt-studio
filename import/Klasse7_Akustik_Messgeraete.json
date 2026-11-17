@@ -1,0 +1,1044 @@
+{
+  "app": "arbeitsblatt-studio",
+  "version": 2,
+  "exportedAt": "2026-11-17T18:59:12.721004+00:00",
+  "folders": [
+    {
+      "id": "k7-folder",
+      "name": "Klasse 7"
+    }
+  ],
+  "prefs": {
+    "view": "grid",
+    "sort": "updated"
+  },
+  "sheets": [
+    {
+      "id": "k7-sheet-120550817",
+      "title": "Akustik 1 – Wie entsteht Schall?",
+      "subject": "Physik",
+      "grade": "7",
+      "font": "sans",
+      "margin": "normal",
+      "theme": "sachlich",
+      "folderId": "k7-folder",
+      "createdAt": "2026-11-17T18:59:12.721004+00:00",
+      "updatedAt": "2026-11-17T18:59:12.721004+00:00",
+      "pages": [
+        {
+          "id": "k7-p1",
+          "blocks": [
+            {
+              "id": "k7-b1",
+              "type": "header",
+              "school": "Muster-Gymnasium",
+              "subject": "Physik",
+              "topic": "Akustik 1 – Wie entsteht Schall?",
+              "showName": true,
+              "showClass": true,
+              "showDate": true,
+              "variant": "klassisch"
+            },
+            {
+              "id": "k7-b2",
+              "type": "text",
+              "variant": "merke",
+              "heading": "Ziel der Stunde",
+              "body": "Du kannst Schallquellen benennen und erklären, dass Schall durch schwingende Körper entsteht."
+            },
+            {
+              "id": "k7-b3",
+              "type": "text",
+              "variant": "info",
+              "heading": "Schall ist überall",
+              "body": "Ob Türknallen, Vogelzwitschern oder das Summen eines Handys – ständig erreichen uns Geräusche. Von **Schall** sprechen wir, wenn ein Körper **schwingt** und diese Schwingung über ein Medium (zum Beispiel Luft) zu unserem Ohr gelangt."
+            },
+            {
+              "id": "k7-b4",
+              "type": "block",
+              "label": "A",
+              "titel": "Einstieg: Hören und Beobachten"
+            },
+            {
+              "id": "k7-b5",
+              "type": "task",
+              "text": "Hörspaziergang: Schließe 30 Sekunden die Augen. Notiere fünf Geräusche und beschreibe sie möglichst genau.",
+              "points": "2",
+              "solution": "Individuelle Lösung, z. B. Tastaturklappern, Verkehr, Vogel, Kühlschrank, Schritte.",
+              "parts": []
+            },
+            {
+              "id": "k7-b6",
+              "type": "table",
+              "header": true,
+              "cells": [
+                [
+                  "Geräusch",
+                  "Schallquelle",
+                  "laut / leise",
+                  "hoch / tief"
+                ],
+                [
+                  "",
+                  "",
+                  "",
+                  ""
+                ],
+                [
+                  "",
+                  "",
+                  "",
+                  ""
+                ],
+                [
+                  "",
+                  "",
+                  "",
+                  ""
+                ],
+                [
+                  "",
+                  "",
+                  "",
+                  ""
+                ]
+              ]
+            },
+            {
+              "id": "k7-b7",
+              "type": "task",
+              "text": "Was haben alle Schallquellen gemeinsam? Formuliere eine Vermutung.",
+              "points": "1",
+              "solution": "Alle Schallquellen schwingen bzw. bewegen sich.",
+              "parts": []
+            },
+            {
+              "id": "k7-b8",
+              "type": "lines",
+              "count": 3,
+              "pattern": "dotted"
+            },
+            {
+              "id": "k7-b9",
+              "type": "umbruch"
+            },
+            {
+              "id": "k7-b10",
+              "type": "block",
+              "label": "B",
+              "titel": "Erklären: Schwingungen"
+            },
+            {
+              "id": "k7-b11",
+              "type": "versuch",
+              "titel": "Versuch: Die zitternde Stimmgabel",
+              "material": "Stimmgabel, Schlagklöppel, Glas mit Wasser, Papierstreifen.",
+              "durchfuehrung": [
+                "Stimmgabel vorsichtig anschlagen und ans Ohr halten.",
+                "Stimmgabel kurz in die Wasseroberfläche tauchen.",
+                "Leichten Papierstreifen an die Gabel halten."
+              ],
+              "linesB": 2,
+              "linesA": 2,
+              "auswertung": ""
+            },
+            {
+              "id": "k7-b12",
+              "type": "task",
+              "text": "Erkläre mit eigenen Worten, warum das Wasser spritzt und warum du einen Ton hörst. Nutze die Begriffe **Schwingung**, **Schallquelle** und **Luft**.",
+              "points": "3",
+              "solution": "Die Gabel schwingt und überträgt Energie auf das Wasser. Über die Luft gelangt die Schwingung als Schall zum Ohr.",
+              "parts": []
+            },
+            {
+              "id": "k7-b13",
+              "type": "cloze",
+              "text": "Schall entsteht, wenn ein Körper [schwingt]. Diese Schwingung breitet sich über ein [Medium] aus und erreicht unser [Ohr]."
+            },
+            {
+              "id": "k7-b14",
+              "type": "mc",
+              "question": "Welche Aussagen sind richtig?",
+              "options": [
+                {
+                  "text": "Schall entsteht durch schwingende Körper.",
+                  "correct": true
+                },
+                {
+                  "text": "Schall braucht keine Schwingung.",
+                  "correct": false
+                },
+                {
+                  "text": "Ein Lautsprecher ist eine Schallquelle.",
+                  "correct": true
+                },
+                {
+                  "text": "Schall kann man nur sehen.",
+                  "correct": false
+                }
+              ]
+            },
+            {
+              "id": "k7-b15",
+              "type": "total",
+              "label": "Punkte gesamt",
+              "note": "Unterschrift der Erziehungsberechtigten"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "k7-sheet-562414780",
+      "title": "Akustik 2 – Wie breitet sich Schall aus?",
+      "subject": "Physik",
+      "grade": "7",
+      "font": "sans",
+      "margin": "normal",
+      "theme": "freundlich",
+      "folderId": "k7-folder",
+      "createdAt": "2026-11-17T18:59:12.721004+00:00",
+      "updatedAt": "2026-11-17T18:59:12.721004+00:00",
+      "pages": [
+        {
+          "id": "k7-p2",
+          "blocks": [
+            {
+              "id": "k7-b16",
+              "type": "header",
+              "school": "Muster-Gymnasium",
+              "subject": "Physik",
+              "topic": "Akustik 2 – Wie breitet sich Schall aus?",
+              "showName": true,
+              "showClass": true,
+              "showDate": true,
+              "variant": "band"
+            },
+            {
+              "id": "k7-b17",
+              "type": "text",
+              "variant": "merke",
+              "heading": "Ziel der Stunde",
+              "body": "Du kannst erklären, dass Schall ein Ausbreitungsmedium braucht, und die Schallgeschwindigkeit für einfache Rechnungen nutzen."
+            },
+            {
+              "id": "k7-b18",
+              "type": "text",
+              "variant": "merke",
+              "heading": "Merke",
+              "body": "Schall breitet sich als Schwingung in einem **Medium** aus (Luft, Wasser, Metall). Im **Vakuum** ist kein Schall hörbar. In Luft ist Schall etwa **340 m/s** schnell."
+            },
+            {
+              "id": "k7-b19",
+              "type": "block",
+              "label": "A",
+              "titel": "Ausbreitung untersuchen"
+            },
+            {
+              "id": "k7-b20",
+              "type": "versuch",
+              "titel": "Versuch: Schall braucht einen Träger",
+              "material": "Wecker (oder Handy), Glasglocke mit Pumpe, Vakuumpumpe.",
+              "durchfuehrung": [
+                "Wecker in die Glocke legen und einschalten.",
+                "Luft langsam absaugen.",
+                "Geräusch beobachten und beschreiben."
+              ],
+              "linesB": 2,
+              "linesA": 2,
+              "auswertung": ""
+            },
+            {
+              "id": "k7-b21",
+              "type": "task",
+              "text": "Erkläre, warum der Wecker immer leiser wird, obwohl er weiter klingelt.",
+              "points": "2",
+              "solution": "Die Luft als Medium wird entfernt; ohne Medium kann sich die Schwingung nicht ausbreiten.",
+              "parts": []
+            },
+            {
+              "id": "k7-b22",
+              "type": "block",
+              "label": "B",
+              "titel": "Rechnen: Schallgeschwindigkeit"
+            },
+            {
+              "id": "k7-b23",
+              "type": "formula",
+              "tex": "v = \\frac{s}{t} \\quad\\Rightarrow\\quad s = v \\cdot t"
+            },
+            {
+              "id": "k7-b24",
+              "type": "task",
+              "text": "Bei einem Gewitter hörst du den Donner **3 s** nach dem Blitz. Wie weit ist das Gewitter entfernt? (v = 340 m/s)",
+              "points": "4",
+              "solution": "s = v · t = 340 m/s · 3 s = 1020 m ≈ 1 km.",
+              "parts": []
+            },
+            {
+              "id": "k7-b25",
+              "type": "task",
+              "text": "Ein Echo kommt nach 0,6 s zurück. Wie weit ist die Wand entfernt? Achte darauf, dass der Schall hin und zurück läuft.",
+              "points": "4",
+              "solution": "s = v · t = 340 m/s · 0,6 s = 204 m (hin und zurück), also 102 m bis zur Wand.",
+              "parts": []
+            },
+            {
+              "id": "k7-b26",
+              "type": "block",
+              "label": "C",
+              "titel": "Sichern"
+            },
+            {
+              "id": "k7-b27",
+              "type": "axes",
+              "xLabel": "t in s",
+              "yLabel": "s in m",
+              "caption": "Weg des Schalls bei 340 m/s",
+              "grid": true,
+              "numbers": true,
+              "square": false,
+              "xMin": 0,
+              "xMax": 3,
+              "xStep": 0.5,
+              "yMin": 0,
+              "yMax": 1200,
+              "yStep": 200,
+              "width": 100,
+              "heightMM": 95,
+              "legend": []
+            },
+            {
+              "id": "k7-b28",
+              "type": "cloze",
+              "text": "Schall braucht ein [Medium]. Im [Vakuum] kann er sich nicht ausbreiten. Die Schallgeschwindigkeit in Luft beträgt etwa [340 m/s]."
+            },
+            {
+              "id": "k7-b29",
+              "type": "mc",
+              "question": "Wie weit kommt Schall in 2 Sekunden (Luft)?",
+              "options": [
+                {
+                  "text": "etwa 680 m",
+                  "correct": true
+                },
+                {
+                  "text": "etwa 170 m",
+                  "correct": false
+                },
+                {
+                  "text": "etwa 340 m",
+                  "correct": false
+                },
+                {
+                  "text": "etwa 2 m",
+                  "correct": false
+                }
+              ]
+            },
+            {
+              "id": "k7-b30",
+              "type": "total",
+              "label": "Punkte gesamt",
+              "note": "Unterschrift der Erziehungsberechtigten"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "k7-sheet-434879311",
+      "title": "Akustik 3 – Amplitude und Frequenz",
+      "subject": "Physik",
+      "grade": "7",
+      "font": "sans",
+      "margin": "normal",
+      "theme": "verspielt",
+      "folderId": "k7-folder",
+      "createdAt": "2026-11-17T18:59:12.721004+00:00",
+      "updatedAt": "2026-11-17T18:59:12.721004+00:00",
+      "pages": [
+        {
+          "id": "k7-p3",
+          "blocks": [
+            {
+              "id": "k7-b31",
+              "type": "header",
+              "school": "Muster-Gymnasium",
+              "subject": "Physik",
+              "topic": "Akustik 3 – Amplitude und Frequenz",
+              "showName": true,
+              "showClass": true,
+              "showDate": true,
+              "variant": "rahmen"
+            },
+            {
+              "id": "k7-b32",
+              "type": "text",
+              "variant": "merke",
+              "heading": "Ziel der Stunde",
+              "body": "Du kannst Amplitude und Frequenz aus einem Schwingungsdiagramm ablesen und erklären, wie sie Lautstärke und Tonhöhe bestimmen."
+            },
+            {
+              "id": "k7-b33",
+              "type": "text",
+              "variant": "merke",
+              "heading": "Merke",
+              "body": "**Amplitude** = größte Auslenkung → bestimmt die **Lautstärke**. **Frequenz** = Schwingungen pro Sekunde (Einheit **Hertz, Hz**) → bestimmt die **Tonhöhe**."
+            },
+            {
+              "id": "k7-b34",
+              "type": "defbox",
+              "term": "Periode T",
+              "def": "Zeit für eine vollständige Schwingung. Es gilt: f = 1 / T."
+            },
+            {
+              "id": "k7-b35",
+              "type": "formula",
+              "tex": "f = \\frac{1}{T}"
+            },
+            {
+              "id": "k7-b36",
+              "type": "block",
+              "label": "A",
+              "titel": "Diagramm lesen"
+            },
+            {
+              "id": "k7-b37",
+              "type": "axes",
+              "xLabel": "t in ms",
+              "yLabel": "Auslenkung",
+              "caption": "Schwingung einer Stimmgabel (schematisch)",
+              "grid": true,
+              "numbers": true,
+              "square": false,
+              "xMin": 0,
+              "xMax": 20,
+              "xStep": 2,
+              "yMin": 0,
+              "yMax": 10,
+              "yStep": 2,
+              "width": 100,
+              "heightMM": 95,
+              "legend": []
+            },
+            {
+              "id": "k7-b38",
+              "type": "task",
+              "text": "Im Diagramm dauert eine vollständige Schwingung **4 ms**. Berechne die Frequenz in Hertz.",
+              "points": "3",
+              "solution": "T = 4 ms = 0,004 s → f = 1/0,004 s = 250 Hz.",
+              "parts": []
+            },
+            {
+              "id": "k7-b39",
+              "type": "task",
+              "text": "Eine Saite schwingt mit 440 Hz. Wie lange dauert eine Schwingung?",
+              "points": "3",
+              "solution": "T = 1/f = 1/440 s ≈ 0,00227 s ≈ 2,3 ms.",
+              "parts": []
+            },
+            {
+              "id": "k7-b40",
+              "type": "block",
+              "label": "B",
+              "titel": "Übertragen"
+            },
+            {
+              "id": "k7-b41",
+              "type": "match",
+              "titel": "Ordne zu:",
+              "items": [
+                {
+                  "left": "große Amplitude",
+                  "right": "lauter Ton"
+                },
+                {
+                  "left": "kleine Amplitude",
+                  "right": "leiser Ton"
+                },
+                {
+                  "left": "hohe Frequenz",
+                  "right": "hoher Ton"
+                },
+                {
+                  "left": "kleine Frequenz",
+                  "right": "tiefer Ton"
+                }
+              ],
+              "order": [
+                3,
+                2,
+                1,
+                0
+              ]
+            },
+            {
+              "id": "k7-b42",
+              "type": "cloze",
+              "text": "Die Amplitude bestimmt die [Lautstärke], die Frequenz die [Tonhöhe]. Die Einheit der Frequenz ist [Hertz]."
+            },
+            {
+              "id": "k7-b43",
+              "type": "mc",
+              "question": "Ein Ton wird höher. Was ändert sich?",
+              "options": [
+                {
+                  "text": "Die Frequenz steigt.",
+                  "correct": true
+                },
+                {
+                  "text": "Die Amplitude steigt.",
+                  "correct": false
+                },
+                {
+                  "text": "Die Frequenz sinkt.",
+                  "correct": false
+                },
+                {
+                  "text": "Die Periode steigt.",
+                  "correct": false
+                }
+              ]
+            },
+            {
+              "id": "k7-b44",
+              "type": "total",
+              "label": "Punkte gesamt",
+              "note": "Unterschrift der Erziehungsberechtigten"
+            }
+          ]
+        },
+        {
+          "id": "k7-p3b",
+          "blocks": [
+            {
+              "id": "k7-b45",
+              "type": "header",
+              "school": "Muster-Gymnasium",
+              "subject": "Physik",
+              "topic": "Akustik 3 – Übungen",
+              "showName": true,
+              "showClass": true,
+              "showDate": true,
+              "variant": "minimal"
+            },
+            {
+              "id": "k7-b46",
+              "type": "block",
+              "label": "C",
+              "titel": "Vertiefung"
+            },
+            {
+              "id": "k7-b47",
+              "type": "table",
+              "header": true,
+              "cells": [
+                [
+                  "Frequenz f",
+                  "Periode T",
+                  "Tonhöhe"
+                ],
+                [
+                  "100 Hz",
+                  "",
+                  ""
+                ],
+                [
+                  "",
+                  "0,01 s",
+                  ""
+                ],
+                [
+                  "1000 Hz",
+                  "",
+                  ""
+                ],
+                [
+                  "",
+                  "2 ms",
+                  ""
+                ]
+              ]
+            },
+            {
+              "id": "k7-b48",
+              "type": "task",
+              "text": "Ergänze die Tabelle.",
+              "points": "4",
+              "solution": "100 Hz → 0,01 s; T = 0,01 s → 100 Hz; 1000 Hz → 1 ms; T = 2 ms → 500 Hz.",
+              "parts": []
+            },
+            {
+              "id": "k7-b49",
+              "type": "lines",
+              "count": 4,
+              "pattern": "dotted"
+            },
+            {
+              "id": "k7-b50",
+              "type": "signature",
+              "label": "Datum, Unterschrift"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "k7-sheet-137179392",
+      "title": "Akustik 4 – Hören, Lärm und Schallschutz",
+      "subject": "Physik",
+      "grade": "7",
+      "font": "sans",
+      "margin": "normal",
+      "theme": "clean",
+      "folderId": "k7-folder",
+      "createdAt": "2026-11-17T18:59:12.721004+00:00",
+      "updatedAt": "2026-11-17T18:59:12.721004+00:00",
+      "pages": [
+        {
+          "id": "k7-p4",
+          "blocks": [
+            {
+              "id": "k7-b51",
+              "type": "header",
+              "school": "Muster-Gymnasium",
+              "subject": "Physik",
+              "topic": "Akustik 4 – Hören, Lärm und Schallschutz",
+              "showName": true,
+              "showClass": true,
+              "showDate": true,
+              "variant": "klassisch"
+            },
+            {
+              "id": "k7-b52",
+              "type": "text",
+              "variant": "merke",
+              "heading": "Ziel der Stunde",
+              "body": "Du kannst das Ohr als Schallempfänger beschreiben und begründen, wann Schall zu Lärm wird und wie man sich schützt."
+            },
+            {
+              "id": "k7-b53",
+              "type": "text",
+              "variant": "info",
+              "heading": "Wie wir hören",
+              "body": "Das **Ohr** nimmt Schall auf: Ohrmuschel → Gehörgang → Trommelfell → Gehörknöchelchen → Innenohr. Der Hörbereich des Menschen liegt etwa zwischen **16 Hz und 20 000 Hz**."
+            },
+            {
+              "id": "k7-b54",
+              "type": "block",
+              "label": "A",
+              "titel": "Lärm bewerten"
+            },
+            {
+              "id": "k7-b55",
+              "type": "task",
+              "text": "Nenne drei Situationen aus deinem Alltag, in denen Schall zu **Lärm** wird. Begründe jeweils kurz.",
+              "points": "3",
+              "solution": "z. B. Baustelle (dauerhaft laut), Kopfhörer zu laut (Gehör), Bohrmaschine im Unterricht (Konzentration).",
+              "parts": []
+            },
+            {
+              "id": "k7-b56",
+              "type": "task",
+              "text": "Zwei Personen streiten über laute Musik im Zug. Formuliere je ein Argument für beide Seiten.",
+              "points": "2",
+              "solution": "Dafür: Freiheit, eigene Musik. Dagegen: Ruhebedürfnis, Gesundheit, Rücksichtnahme.",
+              "parts": []
+            },
+            {
+              "id": "k7-b57",
+              "type": "block",
+              "label": "B",
+              "titel": "Schallschutz"
+            },
+            {
+              "id": "k7-b58",
+              "type": "defbox",
+              "term": "Schallschutz",
+              "def": "Maßnahmen, die verhindern, dass Schall stört oder das Gehör schädigt – z. B. Dämmung, Abstand, Gehörschutz, leiseres Gerät."
+            },
+            {
+              "id": "k7-b59",
+              "type": "task",
+              "text": "Ordne drei Schallschutz-Maßnahmen den Begriffen **Dämmung**, **Abstand** und **Gehörschutz** zu.",
+              "points": "3",
+              "solution": "Dämmung: Teppich, Schaumstoff. Abstand: weiter weg von der Quelle. Gehörschutz: Ohrstöpsel, Kapselgehörschutz.",
+              "parts": []
+            },
+            {
+              "id": "k7-b60",
+              "type": "cloze",
+              "text": "Schall wird im Ohr vom [Trommelfell] aufgenommen. Zu lauter Schall kann das [Gehör] schädigen. Schutz bieten [Ohrstöpsel] oder Abstand."
+            },
+            {
+              "id": "k7-b61",
+              "type": "mc",
+              "question": "Welche Aussage ist richtig?",
+              "options": [
+                {
+                  "text": "Lärm ist Schall, der stört oder schadet.",
+                  "correct": true
+                },
+                {
+                  "text": "Jeder Schall ist Lärm.",
+                  "correct": false
+                },
+                {
+                  "text": "Lärm kann das Gehör nicht schädigen.",
+                  "correct": false
+                },
+                {
+                  "text": "Schallschutz macht Geräte immer lauter.",
+                  "correct": false
+                }
+              ]
+            },
+            {
+              "id": "k7-b62",
+              "type": "total",
+              "label": "Punkte gesamt",
+              "note": ""
+            },
+            {
+              "id": "k7-b63",
+              "type": "signature",
+              "label": "Datum, Unterschrift der Erziehungsberechtigten"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "k7-sheet-490930806",
+      "title": "Messgeräte 1 – Messgrößen und Einheiten",
+      "subject": "Physik",
+      "grade": "7",
+      "font": "sans",
+      "margin": "normal",
+      "theme": "sachlich",
+      "folderId": "k7-folder",
+      "createdAt": "2026-11-17T18:59:12.721004+00:00",
+      "updatedAt": "2026-11-17T18:59:12.721004+00:00",
+      "pages": [
+        {
+          "id": "k7-p5",
+          "blocks": [
+            {
+              "id": "k7-b64",
+              "type": "header",
+              "school": "Muster-Gymnasium",
+              "subject": "Physik",
+              "topic": "Messgeräte 1 – Messgrößen und Einheiten",
+              "showName": true,
+              "showClass": true,
+              "showDate": true,
+              "variant": "band"
+            },
+            {
+              "id": "k7-b65",
+              "type": "text",
+              "variant": "merke",
+              "heading": "Ziel der Stunde",
+              "body": "Du kannst Messgröße, Einheit und Messgerät unterscheiden und mit Vorsätzen (k, m, µ) rechnen."
+            },
+            {
+              "id": "k7-b66",
+              "type": "text",
+              "variant": "merke",
+              "heading": "Merke",
+              "body": "Jede Messung besteht aus **Zahl** und **Einheit**. Physikalische Größen haben feste Einheiten (SI-System). Vorsätze: k = 1000 · m = 1/1000 · µ = 1/1 000 000."
+            },
+            {
+              "id": "k7-b67",
+              "type": "block",
+              "label": "A",
+              "titel": "Größen und Geräte"
+            },
+            {
+              "id": "k7-b68",
+              "type": "table",
+              "header": true,
+              "cells": [
+                [
+                  "Messgröße",
+                  "Einheit",
+                  "Messgerät"
+                ],
+                [
+                  "Länge",
+                  "",
+                  ""
+                ],
+                [
+                  "Masse",
+                  "",
+                  ""
+                ],
+                [
+                  "Zeit",
+                  "",
+                  ""
+                ],
+                [
+                  "Temperatur",
+                  "",
+                  ""
+                ]
+              ]
+            },
+            {
+              "id": "k7-b69",
+              "type": "task",
+              "text": "Ergänze die Tabelle.",
+              "points": "4",
+              "solution": "Länge: Meter (m), Lineal/Maßband; Masse: Kilogramm (kg), Waage; Zeit: Sekunde (s), Stoppuhr; Temperatur: Grad Celsius (°C), Thermometer.",
+              "parts": []
+            },
+            {
+              "id": "k7-b70",
+              "type": "match",
+              "titel": "Ordne Größe und Einheit zu:",
+              "items": [
+                {
+                  "left": "Länge",
+                  "right": "Meter (m)"
+                },
+                {
+                  "left": "Masse",
+                  "right": "Kilogramm (kg)"
+                },
+                {
+                  "left": "Zeit",
+                  "right": "Sekunde (s)"
+                },
+                {
+                  "left": "Temperatur",
+                  "right": "Grad Celsius (°C)"
+                }
+              ],
+              "order": [
+                3,
+                2,
+                1,
+                0
+              ]
+            },
+            {
+              "id": "k7-b71",
+              "type": "block",
+              "label": "B",
+              "titel": "Vorsätze"
+            },
+            {
+              "id": "k7-b72",
+              "type": "task",
+              "text": "Rechne um: 2500 m in km, 0,3 A in mA, 450 mg in g, 2,5 kV in V.",
+              "points": "4",
+              "solution": "2,5 km; 300 mA; 0,45 g; 2500 V.",
+              "parts": []
+            },
+            {
+              "id": "k7-b73",
+              "type": "cloze",
+              "text": "1 km sind [1000] m. 1 mA sind [0,001] A. Die Einheit der Masse ist [Kilogramm]."
+            },
+            {
+              "id": "k7-b74",
+              "type": "mc",
+              "question": "Welche Angabe ist vollständig?",
+              "options": [
+                {
+                  "text": "12,5 cm",
+                  "correct": true
+                },
+                {
+                  "text": "12,5",
+                  "correct": false
+                },
+                {
+                  "text": "cm",
+                  "correct": false
+                },
+                {
+                  "text": "12,5 Grad",
+                  "correct": false
+                }
+              ]
+            },
+            {
+              "id": "k7-b75",
+              "type": "total",
+              "label": "Punkte gesamt",
+              "note": "Unterschrift der Erziehungsberechtigten"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "k7-sheet-543563397",
+      "title": "Messgeräte 2 – Temperatur messen",
+      "subject": "Physik",
+      "grade": "7",
+      "font": "sans",
+      "margin": "normal",
+      "theme": "freundlich",
+      "folderId": "k7-folder",
+      "createdAt": "2026-11-17T18:59:12.721004+00:00",
+      "updatedAt": "2026-11-17T18:59:12.721004+00:00",
+      "pages": [
+        {
+          "id": "k7-p6",
+          "blocks": [
+            {
+              "id": "k7-b76",
+              "type": "header",
+              "school": "Muster-Gymnasium",
+              "subject": "Physik",
+              "topic": "Messgeräte 2 – Temperatur messen",
+              "showName": true,
+              "showClass": true,
+              "showDate": true,
+              "variant": "rahmen"
+            },
+            {
+              "id": "k7-b77",
+              "type": "text",
+              "variant": "merke",
+              "heading": "Ziel der Stunde",
+              "body": "Du kannst eine Messreihe durchführen, Messwerte in einer Tabelle festhalten und daraus ein Diagramm zeichnen."
+            },
+            {
+              "id": "k7-b78",
+              "type": "text",
+              "variant": "info",
+              "heading": "Wie misst man Temperatur?",
+              "body": "Thermometer nutzen die **Ausdehnung** von Flüssigkeiten oder die Spannung eines Sensors. Eine Skala muss **geeicht** sein, sonst sind die Werte nicht vergleichbar."
+            },
+            {
+              "id": "k7-b79",
+              "type": "block",
+              "label": "A",
+              "titel": "Versuch: Erwärmen"
+            },
+            {
+              "id": "k7-b80",
+              "type": "versuch",
+              "titel": "Versuch: Wasser erwärmen",
+              "material": "Becherglas, Wasser, Thermometer, Heizplatte, Stoppuhr.",
+              "durchfuehrung": [
+                "200 ml Wasser in das Becherglas geben.",
+                "Thermometer eintauchen und Starttemperatur ablesen.",
+                "Alle 2 Minuten die Temperatur messen und notieren."
+              ],
+              "linesB": 2,
+              "linesA": 2,
+              "auswertung": ""
+            },
+            {
+              "id": "k7-b81",
+              "type": "table",
+              "header": true,
+              "cells": [
+                [
+                  "Zeit in min",
+                  "0",
+                  "2",
+                  "4",
+                  "6",
+                  "8",
+                  "10"
+                ],
+                [
+                  "Temperatur in °C",
+                  "",
+                  "",
+                  "",
+                  "",
+                  "",
+                  ""
+                ]
+              ]
+            },
+            {
+              "id": "k7-b82",
+              "type": "block",
+              "label": "B",
+              "titel": "Auswerten"
+            },
+            {
+              "id": "k7-b83",
+              "type": "axes",
+              "xLabel": "t in min",
+              "yLabel": "T in °C",
+              "caption": "Erwärmungskurve",
+              "grid": true,
+              "numbers": true,
+              "square": false,
+              "xMin": 0,
+              "xMax": 10,
+              "xStep": 2,
+              "yMin": 0,
+              "yMax": 100,
+              "yStep": 10,
+              "width": 100,
+              "heightMM": 95,
+              "legend": []
+            },
+            {
+              "id": "k7-b84",
+              "type": "task",
+              "text": "Zeichne die Messwerte in das Diagramm und beschreibe den Verlauf.",
+              "points": "4",
+              "solution": "Die Temperatur steigt zunächst gleichmäßig an; die Kurve flacht bei Annäherung an den Siedepunkt ab.",
+              "parts": []
+            },
+            {
+              "id": "k7-b85",
+              "type": "task",
+              "text": "Ein Thermometer zeigt bei Eiswasser 3 °C statt 0 °C. Was bedeutet das für alle Messwerte?",
+              "points": "2",
+              "solution": "Das Thermometer ist falsch geeicht; alle Werte sind um 3 °C zu hoch und müssen korrigiert werden.",
+              "parts": []
+            },
+            {
+              "id": "k7-b86",
+              "type": "mc",
+              "question": "Was gehört zu einer guten Messreihe?",
+              "options": [
+                {
+                  "text": "Mehrere Messungen und ein Mittelwert.",
+                  "correct": true
+                },
+                {
+                  "text": "Nur ein einziger Wert.",
+                  "correct": false
+                },
+                {
+                  "text": "Angabe ohne Einheit.",
+                  "correct": false
+                },
+                {
+                  "text": "Messung ohne Gerät.",
+                  "correct": false
+                }
+              ]
+            },
+            {
+              "id": "k7-b87",
+              "type": "total",
+              "label": "Punkte gesamt",
+              "note": ""
+            },
+            {
+              "id": "k7-b88",
+              "type": "signature",
+              "label": "Datum, Unterschrift"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
