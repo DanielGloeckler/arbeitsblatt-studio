@@ -2,9 +2,11 @@
 
 **Live:** https://monographix25.github.io/arbeitsblatt-studio/
 
-**Fertige Blätter Klasse 7 (Backup zum Einladen):**
-https://monographix25.github.io/arbeitsblatt-studio/import/Klasse7_Akustik_Messgeraete.json
-→ in der App „Backup laden" wählen.
+Beim ersten Start sind die **sechs Klasse-7-Blätter** (Akustik 1–4,
+Messgeräte 1–2) bereits im Ordner **Klasse 7** enthalten – kein Import nötig.
+Zusätzlich liegt das Backup unter `import/Klasse7_Akustik_Messgeraete.json`
+(auch online abrufbar) und lässt sich über „Backup laden" in einen anderen
+Browser übernehmen.
 
 Arbeitsblätter im Baukastenprinzip erstellen – eine einzige `index.html`, kein
 Server, kein Build, kein Login.
