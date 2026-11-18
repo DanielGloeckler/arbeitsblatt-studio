@@ -504,6 +504,19 @@
   #rich-tools .sep { width: 1px; height: 16px; background: rgba(255,255,255,.15); margin: 0 2px; }
   #rich-tools svg { width: 14px; height: 14px; }
 
+  /* Prompt-Ersteller: Auswahl-Chips */
+  .pb-chip {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 3px 8px; border: 1px solid #e2e8f0; border-radius: 6px;
+    background: #fff; font-size: 11px; color: #475569; cursor: pointer;
+    user-select: none;
+  }
+  .pb-chip:hover { border-color: #99f6e4; }
+  .pb-chip:has(input:checked) {
+    background: #f0fdfa; border-color: #5eead4; color: #0f766e; font-weight: 600;
+  }
+  .pb-chip input { width: 12px; height: 12px; accent-color: #0d9488; margin: 0; }
+
   /* Mini-Vorschau im Dashboard */
   .mini { position: relative; overflow: hidden; background: #fff; }
   .mini::after {
@@ -676,7 +689,7 @@ Eine Kraft erkennt man an ihrer Wirkung …
     <div class="flex items-start justify-between gap-4 px-5 py-3 border-b border-slate-200">
       <div>
         <h3 class="font-semibold">KI-Assistent</h3>
-        <p class="text-xs text-slate-500 mt-0.5">Erzeugt ein fertiges Arbeitsblatt – als normale Bausteine, die du danach frei bearbeiten kannst.</p>
+        <p class="text-xs text-slate-500 mt-0.5">Prompt zusammenstellen, in einen Chatbot einfügen, Antwort zurückholen – oder direkt per API-Key erzeugen. Das Ergebnis sind normale Bausteine, die du frei bearbeitest.</p>
       </div>
       <button data-act="ai-close" class="p-1.5 rounded-lg text-slate-400 hover:bg-slate-100">
         <i data-lucide="x" class="w-4 h-4"></i>
@@ -729,48 +742,143 @@ Eine Kraft erkennt man an ihrer Wirkung …
           </div>
         </details>
 
-        <div class="grid grid-cols-2 gap-2">
-          <label class="block">
-            <span class="block text-[11px] font-medium text-slate-500 mb-1">Fach</span>
-            <select id="ai-subject" class="w-full text-sm px-2 py-1.5 rounded border border-slate-200">
-              <option>Physik</option><option>NWT</option>
-            </select>
-          </label>
-          <label class="block">
-            <span class="block text-[11px] font-medium text-slate-500 mb-1">Klasse</span>
-            <select id="ai-grade" class="w-full text-sm px-2 py-1.5 rounded border border-slate-200">
-              ${Array.from({ length: 7 }, (_, i) => 7 + i).map(g => `<option value="${g}" ${g === 8 ? 'selected' : ''}>${g}</option>`).join('')}
-            </select>
-          </label>
+        <div class="rounded-xl border border-slate-200">
+          <div class="flex items-center gap-2 px-3 py-2 border-b border-slate-200 bg-slate-50/70">
+            <span class="w-5 h-5 grid place-items-center rounded-full bg-brand-600 text-white text-[11px] font-bold">1</span>
+            <span class="text-xs font-semibold text-slate-600">Prompt erstellen</span>
+            <span class="ml-auto text-[11px] text-slate-400">ohne API-Key</span>
+          </div>
+
+          <div class="p-3 space-y-3">
+            <div class="grid grid-cols-2 gap-2">
+              <label class="block">
+                <span class="block text-[11px] font-medium text-slate-500 mb-1">Fach</span>
+                <select id="ai-subject" class="w-full text-sm px-2 py-1.5 rounded border border-slate-200">
+                  <option>Physik</option><option>NWT</option>
+                </select>
+              </label>
+              <label class="block">
+                <span class="block text-[11px] font-medium text-slate-500 mb-1">Klasse</span>
+                <select id="ai-grade" class="w-full text-sm px-2 py-1.5 rounded border border-slate-200">
+                  <option>7</option><option>8</option><option>9</option><option>10</option>
+                  <option>11</option><option>12</option><option>13</option>
+                </select>
+              </label>
+            </div>
+
+            <label class="block">
+              <span class="block text-[11px] font-medium text-slate-500 mb-1">Thema <span class="text-red-500">*</span></span>
+              <input id="ai-topic" class="w-full text-sm px-2 py-1.5 rounded border border-slate-200"
+                placeholder="z. B. Elektrischer Widerstand">
+            </label>
+
+            <label class="block">
+              <span class="block text-[11px] font-medium text-slate-500 mb-1">Lernziel (optional)</span>
+              <textarea id="pb-goal" rows="2" class="w-full text-sm px-2 py-1.5 rounded border border-slate-200"
+                placeholder="z. B. Die SuS erklären, wie Spannung, Stromstärke und Widerstand zusammenhängen."></textarea>
+            </label>
+
+            <div class="grid grid-cols-2 gap-2">
+              <label class="block">
+                <span class="block text-[11px] font-medium text-slate-500 mb-1">Niveau</span>
+                <select id="pb-level" class="w-full text-sm px-2 py-1.5 rounded border border-slate-200">
+                  <option value="leicht">Leicht – kleinschrittig</option>
+                  <option value="mittel" selected>Mittel – Standard</option>
+                  <option value="anspruchsvoll">Anspruchsvoll – Transfer</option>
+                </select>
+              </label>
+              <label class="block">
+                <span class="block text-[11px] font-medium text-slate-500 mb-1">Zeit (Minuten)</span>
+                <input id="pb-minutes" type="number" min="5" max="180" value="45"
+                  class="w-full text-sm px-2 py-1.5 rounded border border-slate-200">
+              </label>
+            </div>
+
+            <div>
+              <div class="flex items-center justify-between mb-1.5">
+                <span class="text-[11px] font-medium text-slate-500">Bausteine</span>
+                <button type="button" data-act="prompt-defaults" class="text-[11px] text-brand-700 hover:underline">Standard</button>
+              </div>
+              <div id="pb-blocks" class="flex flex-wrap gap-1.5"></div>
+              <p class="text-[11px] text-slate-400 mt-1">Nichts gewählt? Dann entscheidet das Modell selbst.</p>
+            </div>
+
+            <div class="grid grid-cols-2 gap-2">
+              <label class="block">
+                <span class="block text-[11px] font-medium text-slate-500 mb-1">Seiten</span>
+                <input id="ai-pages" type="number" min="1" max="4" value="1"
+                  class="w-full text-sm px-2 py-1.5 rounded border border-slate-200">
+              </label>
+              <label class="block">
+                <span class="block text-[11px] font-medium text-slate-500 mb-1">Aufgaben</span>
+                <input id="ai-tasks" type="number" min="1" max="8" value="4"
+                  class="w-full text-sm px-2 py-1.5 rounded border border-slate-200">
+              </label>
+            </div>
+
+            <div class="grid grid-cols-2 gap-2 items-start">
+              <label class="block">
+                <span class="block text-[11px] font-medium text-slate-500 mb-1">Punkte (optional)</span>
+                <input id="pb-points" type="number" min="4" max="60" placeholder="z. B. 20"
+                  class="w-full text-sm px-2 py-1.5 rounded border border-slate-200">
+              </label>
+              <label class="flex items-start gap-2 text-[11px] text-slate-600 pt-5">
+                <input type="checkbox" id="pb-diff" class="mt-0.5 accent-teal-600">
+                <span>Zusatzaufgabe für Schnelle</span>
+              </label>
+            </div>
+
+            <label class="block">
+              <span class="block text-[11px] font-medium text-slate-500 mb-1">Zusatzwünsche (optional)</span>
+              <textarea id="ai-extra" rows="2" class="w-full text-sm px-2 py-1.5 rounded border border-slate-200"
+                placeholder="z. B. Alltagsbezug Fahrrad, keine Formeln, Bezug zum Schulbuch"></textarea>
+            </label>
+
+            <div class="flex gap-2">
+              <button data-act="prompt-copy"
+                class="flex-1 flex items-center justify-center gap-2 bg-brand-600 hover:bg-brand-700 text-white text-sm font-semibold px-3 py-2.5 rounded-lg">
+                <i data-lucide="copy" class="w-4 h-4"></i>Prompt kopieren
+              </button>
+              <button data-act="prompt-preview"
+                class="px-3 py-2.5 text-xs font-medium text-slate-600 border border-slate-200 rounded-lg hover:bg-slate-50">Ansehen</button>
+            </div>
+            <pre id="ai-prompt-preview"
+              class="hidden max-h-44 overflow-auto text-[10px] leading-relaxed font-mono bg-slate-900 text-slate-100 p-2.5 rounded-lg whitespace-pre-wrap"></pre>
+            <p id="pb-status" class="text-[11px] text-slate-500"></p>
+          </div>
         </div>
 
-        <label class="block">
-          <span class="block text-[11px] font-medium text-slate-500 mb-1">Thema</span>
-          <input id="ai-topic" class="w-full text-sm px-2 py-1.5 rounded border border-slate-200" placeholder="z. B. Elektrischer Widerstand">
-        </label>
-
-        <label class="block">
-          <span class="block text-[11px] font-medium text-slate-500 mb-1">Zusatzwünsche (optional)</span>
-          <textarea id="ai-extra" rows="3" class="w-full text-sm px-2 py-1.5 rounded border border-slate-200"
-            placeholder="z. B. ein Versuch, zwei Rechenaufgaben, ein Lückentext, Erwartungshorizont"></textarea>
-        </label>
-
-        <div class="grid grid-cols-2 gap-2">
-          <label class="block">
-            <span class="block text-[11px] font-medium text-slate-500 mb-1">Seiten</span>
-            <input id="ai-pages" type="number" min="1" max="4" value="1" class="w-full text-sm px-2 py-1.5 rounded border border-slate-200">
-          </label>
-          <label class="block">
-            <span class="block text-[11px] font-medium text-slate-500 mb-1">Aufgaben</span>
-            <input id="ai-tasks" type="number" min="1" max="8" value="4" class="w-full text-sm px-2 py-1.5 rounded border border-slate-200">
-          </label>
+        <div class="rounded-xl border border-slate-200">
+          <div class="flex items-center gap-2 px-3 py-2 border-b border-slate-200 bg-slate-50/70">
+            <span class="w-5 h-5 grid place-items-center rounded-full bg-slate-900 text-white text-[11px] font-bold">2</span>
+            <span class="text-xs font-semibold text-slate-600">Antwort einfügen</span>
+          </div>
+          <div class="p-3 space-y-2">
+            <p class="text-[11px] leading-snug text-slate-500">
+              Prompt in einen Chatbot einfügen (ChatGPT, Gemini, OpenCode …) und die
+              <b>komplette Antwort</b> hier einsetzen – mit oder ohne Code-Zäune.
+            </p>
+            <textarea id="ai-paste" rows="5" spellcheck="false"
+              class="w-full text-[11px] font-mono px-2 py-1.5 rounded border border-slate-200"
+              placeholder='{"title":"…","subject":"Physik","grade":"7","pages":[{"blocks":[…]}], …}'></textarea>
+            <button data-act="prompt-parse"
+              class="w-full flex items-center justify-center gap-2 text-sm font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 px-3 py-2.5 rounded-lg">
+              <i data-lucide="clipboard-check" class="w-4 h-4"></i>Antwort prüfen
+            </button>
+            <p id="ai-paste-status" class="text-[11px] text-slate-500"></p>
+          </div>
         </div>
 
-        <button data-act="ai-generate" id="ai-generate"
-          class="w-full flex items-center justify-center gap-2 bg-brand-600 hover:bg-brand-700 disabled:opacity-50 text-white text-sm font-semibold px-4 py-2.5 rounded-lg">
-          <i data-lucide="sparkles" class="w-4 h-4"></i>Arbeitsblatt erzeugen
-        </button>
-        <p id="ai-status" class="text-xs text-slate-500"></p>
+        <details class="rounded-lg border border-slate-200 bg-slate-50/60">
+          <summary class="px-3 py-2 text-xs font-semibold text-slate-600 cursor-pointer select-none">Direkt erzeugen (API-Key)</summary>
+          <div class="p-3 pt-0 space-y-2">
+            <button data-act="ai-generate" id="ai-generate"
+              class="w-full flex items-center justify-center gap-2 bg-slate-900 hover:bg-slate-800 disabled:opacity-50 text-white text-sm font-semibold px-4 py-2.5 rounded-lg">
+              <i data-lucide="sparkles" class="w-4 h-4"></i>Arbeitsblatt erzeugen
+            </button>
+            <p id="ai-status" class="text-xs text-slate-500"></p>
+          </div>
+        </details>
       </div>
 
       <div class="p-5 overflow-y-auto bg-slate-50 min-h-0">
@@ -4343,15 +4451,196 @@ Regeln:
 - Formeln in $...$, z. B. $F_G = m \\cdot g$.
 - Kein HTML, keine Bilder-URLs, keine erfundenen Quellen.`;
 
-function aiUserPrompt({ subject, grade, topic, extra, pages, tasks }) {
-  return `Fach: ${subject}
-Klassenstufe: ${grade}
-Thema: ${topic}
-Seiten: ${pages}
-Mindestens ${tasks} Aufgaben
-${extra ? 'Zusätzliche Wünsche: ' + extra : ''}
+/* ---------- Prompt-Ersteller ----------
+   Dieselben Felder speisen zwei Wege: „Prompt kopieren“ (ohne API-Key)
+   und „Direkt erzeugen“ (mit API-Key). */
+const PB_KEY = 'abw.prompt';
+const PB_LEVELS = {
+  leicht: 'einfach und kleinschrittig, mit Beispielen und Hilfen',
+  mittel: 'altersgerecht, ein bis zwei Denkschritte pro Aufgabe',
+  anspruchsvoll: 'anspruchsvoll, mit Transfer- und Anwendungsaufgaben'
+};
+const PB_BLOCKS = [
+  { id: 'merke',        label: 'Merke-Kasten',   hint: 'text-Baustein (variant "merke") mit der Kernaussage in ein bis zwei Sätzen' },
+  { id: 'info',         label: 'Info-Kasten',    hint: 'text-Baustein (variant "info") mit Hintergrundwissen' },
+  { id: 'einstieg',     label: 'Einstieg',       hint: 'kurze Aktivierung mit Alltagsbezug als erste Aufgabe' },
+  { id: 'versuch',      label: 'Versuch',        hint: 'versuch-Baustein mit Material, Durchführung, Beobachtung und Auswertung' },
+  { id: 'rechnen',      label: 'Rechenaufgaben', hint: 'mindestens zwei Aufgaben mit Rechenweg und Einheiten in "solution"' },
+  { id: 'cloze',        label: 'Lückentext',     hint: 'cloze-Baustein, Lücken in [eckigen Klammern]' },
+  { id: 'mc',           label: 'Multiple-Choice', hint: 'mc-Baustein mit vier Antworten und genau einer richtigen' },
+  { id: 'tabelle',      label: 'Tabelle',        hint: 'table-Baustein zum Ausfüllen (Kopfzeile und leere Zeilen)' },
+  { id: 'diagramm',     label: 'Diagramm',       hint: 'axes-Baustein mit passenden Achsenbeschriftungen' },
+  { id: 'formel',       label: 'Formel',         hint: 'mindestens eine abgesetzte Formel als formula-Baustein (reines LaTeX)' },
+  { id: 'schreiblinien',label: 'Schreiblinien',  hint: 'lines-Baustein für Freitextantworten' },
+  { id: 'sortieren',    label: 'Sortieraufgabe', hint: 'sorttask-Baustein mit vier bis sechs Einträgen in falscher Reihenfolge' },
+  { id: 'hausaufgabe',  label: 'Hausaufgabe',    hint: 'abschließende Aufgabe für zu Hause' },
+  { id: 'loesungen',    label: 'Erwartungshorizont', hint: 'zu jeder Aufgabe eine kurze, fachlich korrekte "solution"' }
+];
+const PB_DEFAULTS = ['merke', 'einstieg', 'rechnen', 'loesungen'];
 
-Gib das Arbeitsblatt als JSON zurück.`;
+const pbEl = (id) => document.getElementById(id);
+const pbVal = (id) => { const el = pbEl(id); return el ? String(el.value).trim() : ''; };
+
+function renderPbBlocks() {
+  const box = pbEl('pb-blocks');
+  if (!box) return;
+  box.innerHTML = PB_BLOCKS.map(b => `<label class="pb-chip">
+      <input type="checkbox" data-pb="${b.id}">${esc(b.label)}</label>`).join('');
+}
+
+function pbRead() {
+  const blocks = PB_BLOCKS
+    .filter(b => { const el = document.querySelector(`[data-pb="${b.id}"]`); return !!(el && el.checked); })
+    .map(b => b.id);
+  return {
+    subject: pbVal('ai-subject') || 'Physik',
+    grade: pbVal('ai-grade') || '7',
+    topic: pbVal('ai-topic'),
+    goal: pbVal('pb-goal'),
+    level: pbVal('pb-level') || 'mittel',
+    minutes: pbVal('pb-minutes'),
+    points: pbVal('pb-points'),
+    pages: pbVal('ai-pages') || '1',
+    tasks: pbVal('ai-tasks') || '4',
+    extra: pbVal('ai-extra'),
+    diff: !!(pbEl('pb-diff') && pbEl('pb-diff').checked),
+    blocks
+  };
+}
+
+function pbSave() {
+  try { localStorage.setItem(PB_KEY, JSON.stringify(pbRead())); } catch (e) {}
+}
+
+function pbRestore() {
+  let st = {};
+  try { st = JSON.parse(localStorage.getItem(PB_KEY) || '{}') || {}; } catch (e) { st = {}; }
+  const set = (id, v) => { const el = pbEl(id); if (el && v !== undefined && v !== null && v !== '') el.value = v; };
+  set('ai-subject', st.subject); set('ai-grade', st.grade); set('ai-topic', st.topic);
+  set('pb-goal', st.goal); set('pb-level', st.level); set('pb-minutes', st.minutes);
+  set('pb-points', st.points); set('ai-pages', st.pages); set('ai-tasks', st.tasks);
+  set('ai-extra', st.extra);
+  const diff = pbEl('pb-diff');
+  if (diff) diff.checked = !!st.diff;
+  const chosen = Array.isArray(st.blocks) ? st.blocks : PB_DEFAULTS;
+  PB_BLOCKS.forEach(b => {
+    const el = document.querySelector(`[data-pb="${b.id}"]`);
+    if (el) el.checked = chosen.includes(b.id);
+  });
+}
+
+function pbSetDefaults() {
+  document.querySelectorAll('[data-pb]').forEach(el => {
+    el.checked = PB_DEFAULTS.includes(el.dataset.pb);
+  });
+  pbSave();
+  toast('Standard-Bausteine gesetzt', 'OK');
+}
+
+function aiUserPrompt(st) {
+  const lines = [];
+  lines.push(`Fach: ${st.subject}`);
+  lines.push(`Klassenstufe: ${st.grade}`);
+  lines.push(`Thema: ${st.topic}`);
+  if (st.goal) lines.push(`Lernziel der Stunde: ${st.goal}`);
+  if (st.level) lines.push(`Niveau: ${st.level} – ${PB_LEVELS[st.level] || PB_LEVELS.mittel}`);
+  lines.push(`Umfang: ${st.pages} Seite(n), mindestens ${st.tasks} Aufgaben`);
+  if (st.minutes) lines.push(`Zeitbedarf: etwa ${st.minutes} Minuten`);
+  if (st.points) lines.push(`Gesamtpunktzahl: ${st.points} – verteile die Punkte nachvollziehbar auf die Aufgaben`);
+  if (st.blocks && st.blocks.length) {
+    lines.push('', 'Diese Bausteine bitte verwenden:');
+    st.blocks.forEach(id => {
+      const b = PB_BLOCKS.find(x => x.id === id);
+      if (b) lines.push(`- ${b.label}: ${b.hint}`);
+    });
+  }
+  if (st.diff) lines.push('', 'Binnendifferenzierung: ergänze am Ende eine freiwillige Zusatzaufgabe für schnelle Schülerinnen und Schüler.');
+  if (st.extra) lines.push('', `Zusätzliche Wünsche: ${st.extra}`);
+  lines.push('', 'Antworte jetzt ausschließlich mit dem JSON-Objekt.');
+  return lines.join('\n');
+}
+
+function buildPromptText(st) {
+  return `${AI_SYSTEM.trim()}\n\n---\n\n${aiUserPrompt(st)}`;
+}
+
+function legacyCopy(text) {
+  const ta = document.createElement('textarea');
+  ta.value = text;
+  ta.style.position = 'fixed';
+  ta.style.opacity = '0';
+  document.body.appendChild(ta);
+  ta.select();
+  let ok = false;
+  try { ok = document.execCommand('copy'); } catch (e) { ok = false; }
+  ta.remove();
+  return ok;
+}
+
+async function copyPrompt() {
+  const st = pbRead();
+  if (!st.topic) {
+    toast('Bitte zuerst ein Thema eintragen', 'OK');
+    if (pbEl('ai-topic')) pbEl('ai-topic').focus();
+    return;
+  }
+  pbSave();
+  const text = buildPromptText(st);
+  const pre = pbEl('ai-prompt-preview');
+  const status = pbEl('pb-status');
+  if (pre) { pre.textContent = text; pre.classList.remove('hidden'); }
+
+  let ok = false;
+  try { await navigator.clipboard.writeText(text); ok = true; }
+  catch (e) { ok = legacyCopy(text); }
+
+  if (ok) {
+    toast('Prompt kopiert – jetzt in einen Chatbot einfügen', 'OK');
+    if (status) status.textContent = 'Kopiert. Nächster Schritt: Antwort unten einsetzen und „Antwort prüfen“.';
+  } else if (status) {
+    status.textContent = 'Kopieren blockiert – bitte den Text oben markieren und mit Strg+C kopieren.';
+  }
+  refreshIcons();
+}
+
+function togglePromptPreview() {
+  const pre = pbEl('ai-prompt-preview');
+  if (!pre) return;
+  if (pre.classList.contains('hidden')) {
+    const st = pbRead();
+    if (!st.topic) { toast('Bitte zuerst ein Thema eintragen', 'OK'); return; }
+    pre.textContent = buildPromptText(st);
+    pre.classList.remove('hidden');
+  } else {
+    pre.classList.add('hidden');
+  }
+}
+
+function parsePastedAnswer() {
+  const ta = pbEl('ai-paste');
+  const status = pbEl('ai-paste-status');
+  const text = (ta && ta.value) || '';
+  if (!text.trim()) {
+    toast('Bitte die Antwort des Modells einfügen', 'OK');
+    return;
+  }
+  const st = pbRead();
+  try {
+    if (status) status.textContent = 'Antwort wird geprüft …';
+    const sheet = sanitizeGeneratedSheet(extractJson(text), st.subject, st.grade);
+    aiDraft = sheet;
+    renderAiPreview(sheet);
+    const apply = pbEl('ai-apply');
+    if (apply) apply.disabled = false;
+    const titleEl = pbEl('ai-preview-title');
+    if (titleEl) titleEl.textContent = `${sheet.title} · ${sheet.pages.length} Seite${sheet.pages.length === 1 ? '' : 'n'}`;
+    const count = sheet.pages.reduce((n, p) => n + p.blocks.length, 0);
+    if (status) status.textContent = `Gültig: ${count} Bausteine auf ${sheet.pages.length} Seite${sheet.pages.length === 1 ? '' : 'n'}. Rechts prüfen, dann „Übernehmen“.`;
+    toast('Antwort gelesen – Vorschau rechts', 'OK');
+  } catch (err) {
+    if (status) status.textContent = 'Nicht lesbar: ' + err.message;
+    toast('Antwort konnte nicht gelesen werden', 'OK');
+  }
 }
 
 async function aiRequest(cfg, key, prompt) {
@@ -4443,11 +4732,22 @@ async function aiTestConnection() {
 
 function extractJson(text) {
   let t = String(text).trim();
-  t = t.replace(/^```(?:json)?\s*/i, '').replace(/```\s*$/, '').trim();
+  t = t.replace(/^```(?:json)?\s*/i, '').replace(/```\s*$/i, '').trim();
   const a = t.indexOf('{');
   const b = t.lastIndexOf('}');
-  if (a < 0 || b <= a) throw new Error('Antwort enthielt kein JSON');
-  return JSON.parse(t.slice(a, b + 1));
+  if (a < 0 || b <= a) {
+    throw new Error('In der Antwort steckt kein JSON-Objekt (es muss mit { beginnen und mit } enden).');
+  }
+  const body = t.slice(a, b + 1);
+  try {
+    return JSON.parse(body);
+  } catch (e) {
+    // Häufigster Fehler: Komma vor der schließenden Klammer
+    try { return JSON.parse(body.replace(/,\s*([}\]])/g, '$1')); }
+    catch (_) {
+      throw new Error('Das JSON ist unvollständig oder fehlerhaft – oft wurde die Antwort abgeschnitten. Bitte die komplette Antwort einfügen.');
+    }
+  }
 }
 
 const GEN_TYPES = ['header', 'text', 'task', 'cloze', 'lines', 'mc', 'table', 'image', 'qr',
@@ -4580,6 +4880,8 @@ function renderAiPreview(sheet) {
 function openAi() {
   const modal = document.getElementById('ai-modal');
   if (!modal) return;
+  renderPbBlocks();
+  pbRestore();
   const cfg = aiCfg();
   const providerEl = document.getElementById('ai-provider');
   if (providerEl) providerEl.value = cfg.provider || 'openrouter';
@@ -4588,9 +4890,14 @@ function openAi() {
   document.getElementById('ai-key').value = '';
   document.getElementById('ai-persist').checked = !!localStorage.getItem(AI_KEY_PERSIST);
   document.getElementById('ai-status').textContent = '';
+  const pbStatus = document.getElementById('pb-status');
+  if (pbStatus) pbStatus.textContent = '';
+  const pasteStatus = document.getElementById('ai-paste-status');
+  if (pasteStatus) pasteStatus.textContent = '';
   aiKeyState();
   modal.classList.remove('hidden');
   modal.classList.add('flex');
+  refreshIcons();
 }
 
 function closeAi() {
@@ -4613,7 +4920,7 @@ function aiResetDraft() {
 async function aiGenerate() {
   const key = aiGetKey();
   if (!key) {
-    toast('Bitte zuerst den API-Key speichern', 'OK');
+    toast('Kein API-Key hinterlegt – nutze „Prompt kopieren“ oder speichere oben einen Key', 'OK');
     return;
   }
   const cfg = aiSaveCfg({
@@ -4621,13 +4928,11 @@ async function aiGenerate() {
     baseUrl: document.getElementById('ai-base').value.trim() || AI_DEFAULT.baseUrl,
     model: document.getElementById('ai-model').value.trim() || AI_DEFAULT.model
   });
-  const subject = document.getElementById('ai-subject').value;
-  const grade = document.getElementById('ai-grade').value;
-  const topic = document.getElementById('ai-topic').value.trim();
-  const extra = document.getElementById('ai-extra').value.trim();
-  const pages = clamp(parseInt(document.getElementById('ai-pages').value, 10) || 1, 1, 4);
-  const tasks = clamp(parseInt(document.getElementById('ai-tasks').value, 10) || 4, 1, 8);
-  if (!topic) { toast('Bitte ein Thema angeben', 'OK'); return; }
+  const st = pbRead();
+  st.pages = clamp(parseInt(st.pages, 10) || 1, 1, 4);
+  st.tasks = clamp(parseInt(st.tasks, 10) || 4, 1, 8);
+  if (!st.topic) { toast('Bitte ein Thema angeben', 'OK'); return; }
+  pbSave();
 
   const btn = document.getElementById('ai-generate');
   const status = document.getElementById('ai-status');
@@ -4636,9 +4941,9 @@ async function aiGenerate() {
   aiResetDraft();
 
   try {
-    const raw = await aiRequest(cfg, key, aiUserPrompt({ subject, grade, topic, extra, pages, tasks }));
+    const raw = await aiRequest(cfg, key, aiUserPrompt(st));
     status.textContent = 'Antwort wird geprüft …';
-    aiDraft = sanitizeGeneratedSheet(extractJson(raw), subject, grade);
+    aiDraft = sanitizeGeneratedSheet(extractJson(raw), st.subject, st.grade);
     renderAiPreview(aiDraft);
     document.getElementById('ai-apply').disabled = false;
     document.getElementById('ai-preview-title').textContent =
@@ -5473,6 +5778,10 @@ document.addEventListener('click', (e) => {
 
     case 'ai-open': openAi(); break;
     case 'ai-close': closeAi(); break;
+    case 'prompt-copy': copyPrompt(); break;
+    case 'prompt-preview': togglePromptPreview(); break;
+    case 'prompt-parse': parsePastedAnswer(); break;
+    case 'prompt-defaults': pbSetDefaults(); break;
     case 'ai-generate': aiGenerate(); break;
     case 'ai-apply': aiApply(); break;
     case 'ai-discard': aiResetDraft(); break;
@@ -5842,7 +6151,11 @@ document.addEventListener('click', (e) => {
 
 /* Formularfelder */
 document.addEventListener('change', (e) => {
-  const el = e.target.closest('[data-act]');
+  const t = e.target;
+  const PB_IDS = ['ai-subject', 'ai-grade', 'ai-topic', 'ai-extra', 'ai-pages', 'ai-tasks'];
+  if (t && (t.hasAttribute && t.hasAttribute('data-pb') || (t.id && (PB_IDS.includes(t.id) || t.id.startsWith('pb-'))))) pbSave();
+
+  const el = t.closest('[data-act]');
   if (!el) return;
   const act = el.dataset.act;
 
@@ -6376,18 +6689,19 @@ function boot() {
     if (added) persist();
   }
 
-  // Einmalig: Klasse-7-Blätter auf die Vorlage (schwarz/weiß) umstellen
-  if (localStorage.getItem('abw.seed.k7style') !== '1') {
-    const titel = new Set(KLASSE7_SHEETS.map(s => s.title));
-    sheets.forEach(s => {
-      if (!titel.has(s.title)) return;
-      s.theme = 'vorlage';
-      (s.pages[0] ? s.pages[0].blocks : []).forEach(b => {
-        if (b.type === 'header') b.variant = 'vorlage';
-      });
-      s.updatedAt = nowISO();
+  // Einmalig: Klasse-7-Blätter auf Vorlage umstellen und Inhalte aktualisieren
+  if (localStorage.getItem('abw.seed.k7v2') !== '1') {
+    KLASSE7_SHEETS.forEach(raw => {
+      const vorhanden = sheets.find(s => s.title === raw.title);
+      if (!vorhanden) return;
+      vorhanden.theme = 'vorlage';
+      vorhanden.pages = raw.pages.map(p => ({
+        id: uid(),
+        blocks: p.blocks.map(b => ({ ...b, id: uid() }))
+      }));
+      vorhanden.updatedAt = nowISO();
     });
-    localStorage.setItem('abw.seed.k7style', '1');
+    localStorage.setItem('abw.seed.k7v2', '1');
     persist();
   }
   document.body.classList.remove('editor-open');
