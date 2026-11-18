@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Arbeitsblatt-Studio</title>
 <meta name="description" content="Arbeitsblätter im Baukastenprinzip erstellen – direkt im Browser, ohne Anmeldung.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230d9488'/%3E%3Cpath d='M9 7h9l5 5v13H9z' fill='none' stroke='%23fff' stroke-width='2'/%3E%3Cpath d='M13 16h6M13 20h6' stroke='%23fff' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E">
 <script src="https://cdn.tailwindcss.com"></script>
 <script>
   tailwind.config = {
@@ -6703,6 +6704,24 @@ function boot() {
     });
     localStorage.setItem('abw.seed.k7v2', '1');
     persist();
+  }
+
+  // Einmalig: falsch kodierte Doppelungen der Klasse-7-Blätter entfernen
+  // (ältere Startdaten wurden als cp1252 gelesen: „Ã¤“, „â€““ usw.)
+  if (localStorage.getItem('abw.cleanup.mojibake') !== '1') {
+    const squash = (s) => String(s || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+    const seedKeys = new Set(KLASSE7_SHEETS.map(s => squash(s.title)));
+    const before = sheets.length;
+    sheets = sheets.filter(s => {
+      const broken = /[ÃÂ]|â€/.test(String(s.title || ''));
+      return !(broken && seedKeys.has(squash(s.title)));
+    });
+    const removed = before - sheets.length;
+    localStorage.setItem('abw.cleanup.mojibake', '1');
+    if (removed) {
+      persist();
+      setTimeout(() => toast(`${removed} fehlerhaft kopierte Arbeitsblätter entfernt`, 'OK'), 500);
+    }
   }
   document.body.classList.remove('editor-open');
   $('#view-editor').classList.add('hidden');
