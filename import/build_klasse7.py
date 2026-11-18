@@ -1,10 +1,13 @@
-"""Erzeugt ein Backup (JSON) mit dem Ordner "Klasse 7" und sechs Arbeitsblättern.
+﻿"""Erzeugt ein Backup (JSON) mit dem Ordner "Klasse 7" und sechs Arbeitsblättern.
 Basis: Beispielcurriculum Physik BW, Klasse 7 (4.1 Akustik, 4.2 Messgeräte).
+
+Stil: Vorlage nach arbeitsblatt.sty (schwarz/weiß, Rahmen, Kopfzeile oben).
 
 Aufruf:  python build_klasse7.py
 Ergebnis: Klasse7_Akustik_Messgeraete.json  (im gleichen Ordner)
 """
 
+import itertools
 import json
 from datetime import datetime, timezone
 
@@ -12,9 +15,6 @@ NOW = datetime.now(timezone.utc).isoformat()
 FOLDER_ID = "k7-folder"
 SUBJECT = "Physik"
 GRADE = "7"
-
-
-import itertools
 
 _seq = itertools.count(1)
 
@@ -27,7 +27,7 @@ def page(blocks, pid):
     return {"id": pid, "blocks": blocks}
 
 
-def sheet(title, pages, theme="sachlich", font="sans", folder=FOLDER_ID, offset=0):
+def sheet(title, pages, theme="vorlage", font="sans", folder=FOLDER_ID):
     return {
         "id": f"k7-sheet-{abs(hash(title)) % 10**9}",
         "title": title,
@@ -43,9 +43,9 @@ def sheet(title, pages, theme="sachlich", font="sans", folder=FOLDER_ID, offset=
     }
 
 
-def header(topic, variant="klassisch", school="Muster-Gymnasium"):
+def header(topic, variant="vorlage", school="Muster-Gymnasium"):
     return blk("header", school=school, subject=SUBJECT, topic=topic,
-               showName=True, showClass=True, showDate=True, variant=variant)
+               showName=False, showClass=True, showDate=True, variant=variant)
 
 
 def ziel(text):
@@ -61,7 +61,7 @@ def info(text, heading="Information"):
 
 
 def task(text, points="", solution="", parts=None):
-    return blk("task", text=text, points=str(points), solution=solution, parts=parts or [])
+    return blk("task", text=text, points="", solution=solution, parts=parts or [])
 
 
 def cloze(text):
@@ -98,7 +98,7 @@ def axes(xlabel, ylabel, xmax=10, ymax=10, xstep=1, ystep=1, caption="", height=
                width=100, heightMM=height, legend=[])
 
 
-def total(label="Punkte gesamt", note="Unterschrift der Erziehungsberechtigten"):
+def total(label="Punkte gesamt", note=""):
     return blk("total", label=label, note=note)
 
 
@@ -128,15 +128,17 @@ s1 = sheet("Akustik 1 – Wie entsteht Schall?", [
              "zu unserem Ohr gelangt.", heading="Schall ist überall"),
         blk("block", label="A", titel="Einstieg: Hören und Beobachten"),
         task("Hörspaziergang: Schließe 30 Sekunden die Augen. Notiere fünf Geräusche "
-             "und beschreibe sie möglichst genau.", points=2,
+             "und beschreibe sie möglichst genau.",
              solution="Individuelle Lösung, z. B. Tastaturklappern, Verkehr, Vogel, "
                       "Kühlschrank, Schritte."),
         table([["Geräusch", "Schallquelle", "laut / leise", "hoch / tief"],
                ["", "", "", ""], ["", "", "", ""], ["", "", "", ""], ["", "", "", ""]]),
         task("Was haben alle Schallquellen gemeinsam? Formuliere eine Vermutung.",
-             points=1, solution="Alle Schallquellen schwingen bzw. bewegen sich."),
+             solution="Alle Schallquellen schwingen bzw. bewegen sich."),
         lines(3),
-        blk("umbruch", ),
+    ], "k7-p1"),
+    page([
+        header("Akustik 1 – Wie entsteht Schall?"),
         blk("block", label="B", titel="Erklären: Schwingungen"),
         versuch("Versuch: Die zitternde Stimmgabel",
                 "Stimmgabel, Schlagklöppel, Glas mit Wasser, Papierstreifen.",
@@ -146,7 +148,6 @@ s1 = sheet("Akustik 1 – Wie entsteht Schall?", [
                 lines_b=2, lines_a=2),
         task("Erkläre mit eigenen Worten, warum das Wasser spritzt und warum du einen "
              "Ton hörst. Nutze die Begriffe **Schwingung**, **Schallquelle** und **Luft**.",
-             points=3,
              solution="Die Gabel schwingt und überträgt Energie auf das Wasser. Über die "
                       "Luft gelangt die Schwingung als Schall zum Ohr."),
         cloze("Schall entsteht, wenn ein Körper [schwingt]. Diese Schwingung breitet sich "
@@ -156,14 +157,13 @@ s1 = sheet("Akustik 1 – Wie entsteht Schall?", [
             ("Schall braucht keine Schwingung.", False),
             ("Ein Lautsprecher ist eine Schallquelle.", True),
             ("Schall kann man nur sehen.", False)]),
-        total(),
-    ], "k7-p1"),
-], theme="sachlich")
+    ], "k7-p1b"),
+])
 
 # ---------------------------------------------------------------- Blatt 2
 s2 = sheet("Akustik 2 – Wie breitet sich Schall aus?", [
     page([
-        header("Akustik 2 – Wie breitet sich Schall aus?", variant="band"),
+        header("Akustik 2 – Wie breitet sich Schall aus?"),
         ziel("Du kannst erklären, dass Schall ein Ausbreitungsmedium braucht, und "
              "die Schallgeschwindigkeit für einfache Rechnungen nutzen."),
         merke("Schall breitet sich als Schwingung in einem **Medium** aus "
@@ -177,16 +177,15 @@ s2 = sheet("Akustik 2 – Wie breitet sich Schall aus?", [
                  "Geräusch beobachten und beschreiben."],
                 lines_b=2, lines_a=2),
         task("Erkläre, warum der Wecker immer leiser wird, obwohl er weiter klingelt.",
-             points=2,
              solution="Die Luft als Medium wird entfernt; ohne Medium kann sich die "
                       "Schwingung nicht ausbreiten."),
         blk("block", label="B", titel="Rechnen: Schallgeschwindigkeit"),
         formula(r"v = \frac{s}{t} \quad\Rightarrow\quad s = v \cdot t"),
         task("Bei einem Gewitter hörst du den Donner **3 s** nach dem Blitz. "
-             "Wie weit ist das Gewitter entfernt? (v = 340 m/s)", points=4,
+             "Wie weit ist das Gewitter entfernt? (v = 340 m/s)",
              solution="s = v · t = 340 m/s · 3 s = 1020 m ≈ 1 km."),
         task("Ein Echo kommt nach 0,6 s zurück. Wie weit ist die Wand entfernt? "
-             "Achte darauf, dass der Schall hin und zurück läuft.", points=4,
+             "Achte darauf, dass der Schall hin und zurück läuft.",
              solution="s = v · t = 340 m/s · 0,6 s = 204 m (hin und zurück), "
                       "also 102 m bis zur Wand."),
         blk("block", label="C", titel="Sichern"),
@@ -197,14 +196,13 @@ s2 = sheet("Akustik 2 – Wie breitet sich Schall aus?", [
         mc("Wie weit kommt Schall in 2 Sekunden (Luft)?",
            [("etwa 680 m", True), ("etwa 170 m", False),
             ("etwa 340 m", False), ("etwa 2 m", False)]),
-        total(),
     ], "k7-p2"),
-], theme="freundlich")
+])
 
 # ---------------------------------------------------------------- Blatt 3
 s3 = sheet("Akustik 3 – Amplitude und Frequenz", [
     page([
-        header("Akustik 3 – Amplitude und Frequenz", variant="rahmen"),
+        header("Akustik 3 – Amplitude und Frequenz"),
         ziel("Du kannst Amplitude und Frequenz aus einem Schwingungsdiagramm ablesen "
              "und erklären, wie sie Lautstärke und Tonhöhe bestimmen."),
         merke("**Amplitude** = größte Auslenkung → bestimmt die **Lautstärke**. "
@@ -217,10 +215,10 @@ s3 = sheet("Akustik 3 – Amplitude und Frequenz", [
         axes("t in ms", "Auslenkung", xmax=20, ymax=10, xstep=2, ystep=2,
              caption="Schwingung einer Stimmgabel (schematisch)"),
         task("Im Diagramm dauert eine vollständige Schwingung **4 ms**. "
-             "Berechne die Frequenz in Hertz.", points=3,
+             "Berechne die Frequenz in Hertz.",
              solution="T = 4 ms = 0,004 s → f = 1/0,004 s = 250 Hz."),
         task("Eine Saite schwingt mit 440 Hz. Wie lange dauert eine Schwingung?",
-             points=3, solution="T = 1/f = 1/440 s ≈ 0,00227 s ≈ 2,3 ms."),
+             solution="T = 1/f = 1/440 s ≈ 0,00227 s ≈ 2,3 ms."),
         blk("block", label="B", titel="Übertragen"),
         match("Ordne zu:", [
             ("große Amplitude", "lauter Ton"),
@@ -233,20 +231,19 @@ s3 = sheet("Akustik 3 – Amplitude und Frequenz", [
         mc("Ein Ton wird höher. Was ändert sich?",
            [("Die Frequenz steigt.", True), ("Die Amplitude steigt.", False),
             ("Die Frequenz sinkt.", False), ("Die Periode steigt.", False)]),
-        total(),
     ], "k7-p3"),
     page([
-        header("Akustik 3 – Übungen", variant="minimal"),
+        header("Akustik 3 – Übungen"),
         blk("block", label="C", titel="Vertiefung"),
         table([["Frequenz f", "Periode T", "Tonhöhe"],
                ["100 Hz", "", ""], ["", "0,01 s", ""], ["1000 Hz", "", ""], ["", "2 ms", ""]]),
-        task("Ergänze die Tabelle.", points=4,
+        task("Ergänze die Tabelle.",
              solution="100 Hz → 0,01 s; T = 0,01 s → 100 Hz; 1000 Hz → 1 ms; "
                       "T = 2 ms → 500 Hz."),
         lines(4),
         signature(),
     ], "k7-p3b"),
-], theme="verspielt")
+])
 
 # ---------------------------------------------------------------- Blatt 4
 s4 = sheet("Akustik 4 – Hören, Lärm und Schallschutz", [
@@ -259,11 +256,11 @@ s4 = sheet("Akustik 4 – Hören, Lärm und Schallschutz", [
              "zwischen **16 Hz und 20 000 Hz**.", heading="Wie wir hören"),
         blk("block", label="A", titel="Lärm bewerten"),
         task("Nenne drei Situationen aus deinem Alltag, in denen Schall zu **Lärm** "
-             "wird. Begründe jeweils kurz.", points=3,
+             "wird. Begründe jeweils kurz.",
              solution="z. B. Baustelle (dauerhaft laut), Kopfhörer zu laut (Gehör), "
                       "Bohrmaschine im Unterricht (Konzentration)."),
         task("Zwei Personen streiten über laute Musik im Zug. Formuliere je ein "
-             "Argument für beide Seiten.", points=2,
+             "Argument für beide Seiten.",
              solution="Dafür: Freiheit, eigene Musik. Dagegen: Ruhebedürfnis, "
                       "Gesundheit, Rücksichtnahme."),
         blk("block", label="B", titel="Schallschutz"),
@@ -271,7 +268,7 @@ s4 = sheet("Akustik 4 – Hören, Lärm und Schallschutz", [
                                "das Gehör schädigt – z. B. Dämmung, Abstand, "
                                "Gehörschutz, leiseres Gerät."),
         task("Ordne drei Schallschutz-Maßnahmen den Begriffen **Dämmung**, "
-             "**Abstand** und **Gehörschutz** zu.", points=3,
+             "**Abstand** und **Gehörschutz** zu.",
              solution="Dämmung: Teppich, Schaumstoff. Abstand: weiter weg von der "
                       "Quelle. Gehörschutz: Ohrstöpsel, Kapselgehörschutz."),
         cloze("Schall wird im Ohr vom [Trommelfell] aufgenommen. Zu lauter Schall "
@@ -281,15 +278,14 @@ s4 = sheet("Akustik 4 – Hören, Lärm und Schallschutz", [
             ("Jeder Schall ist Lärm.", False),
             ("Lärm kann das Gehör nicht schädigen.", False),
             ("Schallschutz macht Geräte immer lauter.", False)]),
-        total(label="Punkte gesamt", note=""),
         signature("Datum, Unterschrift der Erziehungsberechtigten"),
     ], "k7-p4"),
-], theme="clean")
+])
 
 # ---------------------------------------------------------------- Blatt 5
 s5 = sheet("Messgeräte 1 – Messgrößen und Einheiten", [
     page([
-        header("Messgeräte 1 – Messgrößen und Einheiten", variant="band"),
+        header("Messgeräte 1 – Messgrößen und Einheiten"),
         ziel("Du kannst Messgröße, Einheit und Messgerät unterscheiden und mit "
              "Vorsätzen (k, m, µ) rechnen."),
         merke("Jede Messung besteht aus **Zahl** und **Einheit**. "
@@ -298,7 +294,7 @@ s5 = sheet("Messgeräte 1 – Messgrößen und Einheiten", [
         blk("block", label="A", titel="Größen und Geräte"),
         table([["Messgröße", "Einheit", "Messgerät"],
                ["Länge", "", ""], ["Masse", "", ""], ["Zeit", "", ""], ["Temperatur", "", ""]]),
-        task("Ergänze die Tabelle.", points=4,
+        task("Ergänze die Tabelle.",
              solution="Länge: Meter (m), Lineal/Maßband; Masse: Kilogramm (kg), Waage; "
                       "Zeit: Sekunde (s), Stoppuhr; Temperatur: Grad Celsius (°C), Thermometer."),
         match("Ordne Größe und Einheit zu:", [
@@ -309,20 +305,18 @@ s5 = sheet("Messgeräte 1 – Messgrößen und Einheiten", [
         ]),
         blk("block", label="B", titel="Vorsätze"),
         task("Rechne um: 2500 m in km, 0,3 A in mA, 450 mg in g, 2,5 kV in V.",
-             points=4,
              solution="2,5 km; 300 mA; 0,45 g; 2500 V."),
         cloze("1 km sind [1000] m. 1 mA sind [0,001] A. Die Einheit der Masse ist "
               "[Kilogramm]."),
         mc("Welche Angabe ist vollständig?",
            [("12,5 cm", True), ("12,5", False), ("cm", False), ("12,5 Grad", False)]),
-        total(),
     ], "k7-p5"),
-], theme="sachlich")
+])
 
 # ---------------------------------------------------------------- Blatt 6
 s6 = sheet("Messgeräte 2 – Temperatur messen", [
     page([
-        header("Messgeräte 2 – Temperatur messen", variant="rahmen"),
+        header("Messgeräte 2 – Temperatur messen"),
         ziel("Du kannst eine Messreihe durchführen, Messwerte in einer Tabelle "
              "festhalten und daraus ein Diagramm zeichnen."),
         info("Thermometer nutzen die **Ausdehnung** von Flüssigkeiten oder die "
@@ -341,11 +335,10 @@ s6 = sheet("Messgeräte 2 – Temperatur messen", [
         axes("t in min", "T in °C", xmax=10, ymax=100, xstep=2, ystep=10,
              caption="Erwärmungskurve"),
         task("Zeichne die Messwerte in das Diagramm und beschreibe den Verlauf.",
-             points=4,
              solution="Die Temperatur steigt zunächst gleichmäßig an; die Kurve "
                       "flacht bei Annäherung an den Siedepunkt ab."),
         task("Ein Thermometer zeigt bei Eiswasser 3 °C statt 0 °C. Was bedeutet das "
-             "für alle Messwerte?", points=2,
+             "für alle Messwerte?",
              solution="Das Thermometer ist falsch geeicht; alle Werte sind um 3 °C "
                       "zu hoch und müssen korrigiert werden."),
         mc("Was gehört zu einer guten Messreihe?",
@@ -353,10 +346,9 @@ s6 = sheet("Messgeräte 2 – Temperatur messen", [
             ("Nur ein einziger Wert.", False),
             ("Angabe ohne Einheit.", False),
             ("Messung ohne Gerät.", False)]),
-        total(label="Punkte gesamt", note=""),
         signature(),
     ], "k7-p6"),
-], theme="freundlich")
+])
 
 BACKUP = {
     "app": "arbeitsblatt-studio",

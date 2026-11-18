@@ -45,14 +45,15 @@ keine Serverfunktionen. Die Datei läuft genauso per Doppelklick lokal.
 - **Kopfzeile in vier Designs**: Klassisch, Balken (schwarzes Band),
   Rahmen, Minimal – umschaltbar in den Baustein-Einstellungen, mit Schaltern
   für Name, Klasse und Datum sowie **Schullogo** (Upload, Höhe in mm).
-- **Vier Seiten-Designs** von verspielt bis clean: *Verspielt* (Klasse 5–7,
-  runde Karten, warme Farben), *Freundlich* (7–9, Blau, sanfte Rundungen),
-  *Sachlich* (9–11, aktueller Look), *Clean* (11–13, minimalistisch, dünne
-  Linien, runde Nummern-Badges).
+- **Vier Seiten-Designs** von verspielt bis clean: *Vorlage* (schwarz/weiß,
+  Rahmen 1 cm vom Rand, Kopfzeile Klasse/Fach/Datum, schwarze Titelkästchen,
+  Helvetica – entspricht `arbeitsblatt.sty`), *Verspielt* (Klasse 5–7),
+  *Freundlich* (7–9), *Sachlich* (9–11), *Clean* (11–13).
 - **Mehrere Seiten**: „Neue Seite" links, „+ Seite" an jeder Seitenleiste,
   Seite löschen mit Rückgängig. Aufgaben werden über alle Seiten durchgezählt.
 - **Bausteine** (links): Kopfzeile, Überschrift & Text (normal/Merke/Info/Tipp),
-  Aufgabenblock (Nummer, Punkte, **Teilaufgaben a) b) c)**, Lösung),
+  Aufgabenblock (Nummer `A 1`, **Teilaufgaben a) b) c)**, Lösung – **ohne
+  Punkte**),
   Lückentext (`[Wörter]`, **auch mit Formeln** `$…$`), Schreiblinien/Karopapier,
   Multiple-Choice, **Tabelle** (Zeilen/Spalten frei), Bild, **QR-Code**,
   **Punktesumme**, **Formel** (abgesetzt, LaTeX), **Begriffsdefinition**,

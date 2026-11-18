@@ -313,6 +313,14 @@
   .ab-text.notiz { background: #fef9c3; border: 1px solid #fde68a; padding: 3mm 4mm; border-radius: var(--radius, 0); }
   .ab-text.notiz .ab-chip { color: #a16207; }
 
+  /* Abschnitts-Überschrift A/B/C */
+  .ab-block { display: flex; align-items: center; gap: 3mm; margin: 1mm 0; }
+  .ab-block-label {
+    background: #000; color: #fff; font-weight: 700; padding: 1mm 2.5mm;
+    font-size: 9.5pt; line-height: 1.2;
+  }
+  .ab-block-title { font-weight: 700; font-size: 11pt; }
+
   /* Textvariante Warnung */
   .ab-text.warnung { background: #fef2f2; border: 1px solid #fca5a5; border-left: 4px solid #dc2626; padding: 3mm 4mm; border-radius: var(--radius, 0); }
   .ab-text.warnung .ab-chip { color: #b91c1c; }
@@ -355,6 +363,48 @@
   .sheet.theme-clean .ab-band .ab-eyebrow { color: #6b7280; }
   .sheet.theme-clean .ab-text.merke { border-left-width: 2px; }
   .sheet.theme-clean .ab-chip { color: #6b7280; letter-spacing: .14em; }
+
+  /* ---------- Vorlage nach arbeitsblatt.sty ---------- */
+  .sheet.theme-vorlage {
+    --accent: #000000; --soft: #ffffff; --soft2: #f2f2f2; --radius: 0px;
+    --badge-bg: #000000; --badge-fg: #ffffff; --band-bg: #000000;
+    font-family: Helvetica, Arial, "Segoe UI", sans-serif;
+  }
+  .sheet.theme-vorlage::after {
+    content: ""; position: absolute; inset: 10mm; border: 1.5pt solid #000;
+    pointer-events: none;
+  }
+  .sheet.theme-vorlage .ab-text.merke,
+  .sheet.theme-vorlage .ab-text.info {
+    background: #fff; border: 1pt solid #000; border-left: 1pt solid #000;
+    padding: 5mm 4mm 3mm;
+  }
+  .sheet.theme-vorlage .ab-text.merke .ab-chip,
+  .sheet.theme-vorlage .ab-text.info .ab-chip {
+    display: inline-block; background: #000; color: #fff;
+    padding: .6mm 2.5mm; margin: -5.5mm 0 2mm -5mm; font-size: 9pt;
+    letter-spacing: .02em; text-transform: none;
+  }
+  .sheet.theme-vorlage .ab-line { height: 11mm; border-bottom: 1.2pt dotted #000; }
+  .sheet.theme-vorlage .ab-box { width: 4.5mm; height: 4.5mm; border-width: 1.2pt; }
+  .sheet.theme-vorlage .ab-task-no { border-radius: 0; box-shadow: none; }
+  .sheet.theme-vorlage .ab-quote { border-left-color: #000; }
+  .sheet.theme-vorlage .sheet-footer { justify-content: center; border-top: 0; color: #000; font-weight: 700; font-size: 9pt; }
+  .sheet.theme-vorlage .sheet-footer span:first-child { display: none; }
+  .sheet.theme-vorlage .ab-formulas,
+  .sheet.theme-vorlage .ab-def,
+  .sheet.theme-vorlage .ab-versuch,
+  .sheet.theme-vorlage .ab-qr { border-color: #000; }
+
+  .ab-vorlage-top {
+    display: flex; justify-content: space-between; align-items: baseline;
+    font-size: 9pt; margin-bottom: 2mm;
+  }
+  .ab-vorlage-fach { font-weight: 700; text-transform: uppercase; letter-spacing: .06em; }
+  .ab-title-center {
+    text-align: center; text-transform: uppercase; font-size: 18pt;
+    letter-spacing: .02em; line-height: 1.15;
+  }
 
   /* Aufgaben */
   .ab-task { display: flex; gap: 3mm; align-items: flex-start; }
@@ -910,7 +960,7 @@ function migrateSheet(sheet) {
   }));
   sheet.font = ['sans', 'serif', 'hand'].includes(sheet.font) ? sheet.font : 'sans';
   sheet.margin = MARGINS.some(m => m.id === sheet.margin) ? sheet.margin : 'normal';
-  sheet.theme = ['verspielt', 'freundlich', 'sachlich', 'clean'].includes(sheet.theme) ? sheet.theme : 'sachlich';
+  sheet.theme = ['vorlage', 'verspielt', 'freundlich', 'sachlich', 'clean'].includes(sheet.theme) ? sheet.theme : 'vorlage';
   if (!sheet.margins || typeof sheet.margins !== 'object') {
     const v = parseInt(marginValue(sheet.margin), 10) || 20;
     sheet.margins = { top: v, right: v, bottom: v, left: v };
@@ -954,7 +1004,7 @@ function makeBlock(type) {
   const base = { id: uid(), type };
   switch (type) {
     case 'header':
-      return { ...base, school: 'Muster-Schule', subject: '', topic: 'Neues Thema', showName: true, showClass: true, showDate: true, logo: '', logoHeight: 12 };
+      return { ...base, school: 'Muster-Schule', subject: '', topic: 'Neues Thema', showName: true, showClass: true, showDate: true, logo: '', logoHeight: 12, variant: 'vorlage' };
     case 'text':
       return { ...base, variant: 'normal', heading: '', body: 'Text eingeben …' };
     case 'task':
@@ -1024,6 +1074,8 @@ function makeBlock(type) {
       return { ...base, titel: 'Wortsuchrätsel', words: ['KRAFT', 'MASSE', 'ENERGIE', 'LEISTUNG'], size: 12 };
     case 'spacer':
       return { ...base, height: 20, flexible: false };
+    case 'block':
+      return { ...base, label: 'A', titel: 'Abschnitt' };
     case 'versuch':
       return { ...base, titel: 'Versuch: …', material: 'Material, Geräte …', durchfuehrung: ['Schritt 1', 'Schritt 2'], linesB: 2, linesA: 2, auswertung: '' };
     case 'axes':
@@ -1047,6 +1099,7 @@ function newSheet(partial = {}) {
     grade: '7',
     font: 'sans',
     margin: 'normal',
+    theme: 'vorlage',
     createdAt: nowISO(),
     updatedAt: nowISO(),
     pages: [{ id: uid(), blocks: [makeBlock('header'), makeBlock('task')] }],
@@ -1458,6 +1511,17 @@ function blockHTML(b, ctx) {
           ${b.showDate ? `<div>Datum: <span class="ab-dots" style="min-width:30mm"></span></div>` : ''}
         </div>`;
 
+      if (v === 'vorlage') {
+        return wrap(`<div class="ab-header ab-header-vorlage">
+          <div class="ab-vorlage-top">
+            <span class="ab-vorlage-meta">${b.showClass ? 'Klasse: <span class="ab-dots" style="min-width:22mm"></span>' : ''}</span>
+            <span class="ab-vorlage-fach">${esc(b.subject || '')}</span>
+            <span class="ab-vorlage-meta">${b.showDate ? 'Datum: <span class="ab-dots" style="min-width:22mm"></span>' : ''}</span>
+          </div>
+          ${rich(b, 'topic', ctx, 'ab-title ab-title-center', 'Thema des Arbeitsblatts', true)}
+          ${b.showName ? `<div class="ab-meta ab-fields"><div>Name: <span class="ab-dots" style="min-width:60mm"></span></div></div>` : ''}
+        </div>`);
+      }
       if (v === 'band') {
         return wrap(`<div class="ab-header ab-header-band">
           <div class="ab-band">
@@ -1513,15 +1577,10 @@ function blockHTML(b, ctx) {
     case 'task':
       return wrap(`
         <div class="ab-task">
-          <div class="ab-task-no">${ctx.taskNo}</div>
+          <div class="ab-task-no">A ${ctx.taskNo}</div>
           <div class="ab-task-main">
             <div class="ab-task-row">
               ${rich(b, 'text', ctx, 'ab-task-text ab-task-body', 'Aufgabenstellung …')}
-              <div class="ab-points">[ /
-                ${ctx.interactive
-                  ? `<input class="ab-points-in" data-field="points" value="${esc(b.points || '')}" inputmode="numeric" aria-label="Punkte">`
-                  : esc(b.points || '')}
-                P.]</div>
             </div>
             ${(b.parts || []).length ? `<ol class="ab-parts">
               ${b.parts.map((pt, i) => `<li>
@@ -1689,7 +1748,7 @@ function blockHTML(b, ctx) {
         <div class="ab-total">
           <span>${renderRich(b.label || 'Punkte gesamt')}
             ${b.note ? `<span class="ab-total-note">· ${renderRich(b.note)}</span>` : ''}</span>
-          <span>${ctx.totalPoints || 0} P.</span>
+          <span>${ctx.totalPoints ? ctx.totalPoints + ' P.' : '<span class="ab-dots" style="min-width:18mm"></span> P.'}</span>
         </div>`);
 
     case 'formula':
@@ -1740,6 +1799,12 @@ function blockHTML(b, ctx) {
         <span class="ab-spacer-label no-print">${b.flexible ? 'füllt bis zum Seitenende' : 'Abstand ' + h + ' mm'}</span>
       </div>`);
     }
+
+    case 'block':
+      return wrap(`<div class="ab-block">
+        <span class="ab-block-label">${esc(b.label || '')}</span>
+        ${rich(b, 'titel', ctx, 'ab-block-title', 'Abschnitt', true)}
+      </div>`);
 
     case 'versuch': {
       const steps = b.durchfuehrung || [];
@@ -2317,7 +2382,8 @@ const PALETTE = [
   { type: 'table', key: 'preset:noten', icon: 'graduation-cap', label: 'Notenspiegel', desc: 'Punkte, Note und Anzahl' },
   { type: 'table', key: 'preset:zeitplan', icon: 'calendar-days', label: 'Zeitplan', desc: 'Wochenraster Mo–Fr' },
   { type: 'match', icon: 'arrow-left-right', label: 'Wörter zuordnen', desc: 'Zwei Spalten zum Verbinden' },
-  { type: 'wordsearch', icon: 'grid-3x3', label: 'Wortsuchrätsel', desc: 'Buchstabengitter aus Wortliste' }
+  { type: 'wordsearch', icon: 'grid-3x3', label: 'Wortsuchrätsel', desc: 'Buchstabengitter aus Wortliste' },
+  { type: 'block', icon: 'heading', label: 'Abschnitt', desc: 'Überschrift A / B / C' }
 ];
 
 const PRESETS = {
@@ -2635,6 +2701,7 @@ function settingsHTML() {
       <span class="block text-xs font-medium text-slate-500 mb-1.5">Design</span>
       <div class="grid grid-cols-2 gap-1.5">
         ${[
+          ['vorlage', 'Vorlage', 'Schwarz/Weiß'],
           ['verspielt', 'Verspielt', 'Klasse 5–7'],
           ['freundlich', 'Freundlich', 'Klasse 7–9'],
           ['sachlich', 'Sachlich', 'Klasse 9–11'],
@@ -2739,7 +2806,7 @@ function blockSettingsHTML(b, page, s) {
     quote: 'Zitat / Textquelle', sorttask: 'Sortieraufgabe', signature: 'Unterschrift',
     spacer: 'Abstand', versuch: 'Versuch', axes: 'Koordinatensystem', numberline: 'Zahlenstrahl',
     formulas: 'Formelsammlung', circuit: 'Schaltplan',
-    match: 'Wörter zuordnen', wordsearch: 'Wortsuchrätsel'
+    match: 'Wörter zuordnen', wordsearch: 'Wortsuchrätsel', block: 'Abschnitt'
   }[b.type] || b.type;
 
   const pageIndex = s.pages.indexOf(page) + 1;
@@ -2793,11 +2860,6 @@ function blockSettingsHTML(b, page, s) {
 
   if (b.type === 'task') {
     specific = `
-      <label class="block">
-        <span class="block text-xs font-medium text-slate-500 mb-1">Punkte</span>
-        <input data-act="set-points" value="${esc(b.points || '')}" inputmode="numeric" placeholder="z. B. 4"
-          class="w-20 text-sm px-2 py-1.5 rounded-lg border border-slate-200 focus:border-brand-300 outline-none">
-      </label>
       <div>
         <span class="block text-xs font-medium text-slate-500 mb-1">Teilaufgaben</span>
         ${(b.parts || []).map((p, i) => `
@@ -3100,6 +3162,18 @@ function blockSettingsHTML(b, page, s) {
       <p class="text-[11px] text-slate-400 leading-snug">Einfacher Stromkreis mit Widerstand, Lampe, Schalter und Batterie.</p>`;
   }
 
+  if (b.type === 'block') {
+    specific = `
+      <div class="grid grid-cols-[70px_1fr] gap-2">
+        <label class="block">
+          <span class="block text-xs font-medium text-slate-500 mb-1">Kennung</span>
+          <input data-act="block-label" value="${esc(b.label || '')}" placeholder="A"
+            class="w-full text-sm px-2 py-1.5 rounded-lg border border-slate-200 text-center">
+        </label>
+        <div class="text-[11px] text-slate-400 self-end pb-2">Titel direkt im Blatt bearbeiten.</div>
+      </div>`;
+  }
+
   if (b.type === 'match') {
     specific = `
       <span class="block text-xs font-medium text-slate-500 mb-1">Paare</span>
@@ -3191,7 +3265,7 @@ function blockSettingsHTML(b, page, s) {
       <div>
         <span class="block text-xs font-medium text-slate-500 mb-1.5">Design</span>
         <div class="grid grid-cols-2 gap-1">
-          ${[['klassisch', 'Klassisch'], ['band', 'Balken'], ['rahmen', 'Rahmen'], ['minimal', 'Minimal']].map(([v, l]) => `
+          ${[['vorlage', 'Vorlage'], ['klassisch', 'Klassisch'], ['band', 'Balken'], ['rahmen', 'Rahmen'], ['minimal', 'Minimal']].map(([v, l]) => `
             <button data-act="set-header-variant" data-value="${v}"
               class="px-2 py-1.5 rounded-lg border text-[11px] font-medium transition
               ${(b.variant || 'klassisch') === v ? 'border-brand-400 bg-brand-50 text-brand-800' : 'border-slate-200 text-slate-500 hover:bg-slate-50'}">${l}</button>`).join('')}
@@ -3890,6 +3964,14 @@ const EXPORT_CSS = `
   .ab-text.notiz { background: #fef9c3; border: 1px solid #fde68a; padding: 3mm 4mm; border-radius: var(--radius, 0); }
   .ab-text.notiz .ab-chip { color: #a16207; }
 
+  /* Abschnitts-Überschrift A/B/C */
+  .ab-block { display: flex; align-items: center; gap: 3mm; margin: 1mm 0; }
+  .ab-block-label {
+    background: #000; color: #fff; font-weight: 700; padding: 1mm 2.5mm;
+    font-size: 9.5pt; line-height: 1.2;
+  }
+  .ab-block-title { font-weight: 700; font-size: 11pt; }
+
   /* Textvariante Warnung */
   .ab-text.warnung { background: #fef2f2; border: 1px solid #fca5a5; border-left: 4px solid #dc2626; padding: 3mm 4mm; border-radius: var(--radius, 0); }
   .ab-text.warnung .ab-chip { color: #b91c1c; }
@@ -3991,9 +4073,8 @@ function texBlock(b) {
       return `\\begin{tcolorbox}[enhanced, sharp corners, ${opt}, title={${title}}, fonttitle=\\bfseries]\n${head}${body}\n\\end{tcolorbox}`;
     }
     case 'task': {
-      const pts = b.points ? `\\hfill [\\,/\\,${esc(b.points)}\\,P.\\,]` : '';
       let out = `\\stepcounter{aufgabe}\\noindent\n`
-        + `\\colorbox{black}{\\textcolor{white}{\\textbf{A \\theaufgabe}}}\\ ${texInline(b.text)}${pts}\\par`;
+        + `\\colorbox{black}{\\textcolor{white}{\\textbf{A \\theaufgabe}}}\\ ${texInline(b.text)}\\par`;
       if (Array.isArray(b.parts) && b.parts.length) {
         out += '\n\\begin{enumerate}[label=\\alph*), leftmargin=8mm, itemsep=1mm]\n'
           + b.parts.map(p => `  \\item ${texInline(p.text)}`).join('\n')
@@ -4088,6 +4169,8 @@ ${items.map((it, i) => `${i + 1}. ${texInline(it.left)} & ${String.fromCharCode(
       const ws = wordsearchGrid(b);
       return `\\begin{center}\\ttfamily\\small\n${ws.grid.map(r => r.join(' ')).join('\\\\\n')}\n\\end{center}\n\\small\\rmfamily Wörter: ${(b.words || []).map(w => texEsc(w)).join(', ')}`;
     }
+    case 'block':
+      return `\\par\\vspace{3mm}\\noindent\\colorbox{black}{\\textcolor{white}{\\textbf{${texEsc(b.label || '')}}}}\\hspace{2mm}{\\large\\bfseries ${texInline(b.titel)}}\\par\\vspace{1mm}`;
     case 'numberline':
       return `\\begin{center}\n\\fbox{\\parbox[c][1.5cm][c]{0.8\\linewidth}{\\centering\\small Zahlenstrahl ${esc(b.min)} bis ${esc(b.max)}}}\\\\[1mm]\n\\small ${texInline(b.caption)}\n\\end{center}`;
     case 'spacer':
@@ -4369,7 +4452,7 @@ function extractJson(text) {
 
 const GEN_TYPES = ['header', 'text', 'task', 'cloze', 'lines', 'mc', 'table', 'image', 'qr',
   'formula', 'code', 'defbox', 'quote', 'sorttask', 'signature', 'total', 'versuch',
-  'axes', 'numberline', 'spacer'];
+  'axes', 'numberline', 'spacer', 'block'];
 
 const aiStr = (v, n = 2000) => (typeof v === 'string' ? v.slice(0, n) : '');
 const aiNum = (v, a, b) => { const x = Number(v); return Number.isFinite(x) ? Math.min(b, Math.max(a, x)) : a; };
@@ -4476,7 +4559,7 @@ function sanitizeGeneratedSheet(raw, subject, grade) {
     title: aiStr(raw.title, 120) || 'KI-Arbeitsblatt',
     subject: ['Physik', 'NWT'].includes(raw.subject) ? raw.subject : subject,
     grade: GRADES.includes(String(raw.grade)) ? String(raw.grade) : grade,
-    theme: ['verspielt', 'freundlich', 'sachlich', 'clean'].includes(raw.theme) ? raw.theme : 'sachlich',
+    theme: ['vorlage', 'verspielt', 'freundlich', 'sachlich', 'clean'].includes(raw.theme) ? raw.theme : 'vorlage',
     pages
   });
 }
@@ -4584,6 +4667,7 @@ function aiApply() {
    10d. Neues Arbeitsblatt: Layout-Auswahl
    ========================================================================== */
 const NEW_LAYOUTS = [
+  { id: 'vorlage',   name: 'Vorlage',   desc: 'Schwarz-weiß, Rahmen',    theme: 'vorlage', header: 'vorlage' },
   { id: 'klassisch', name: 'Klassisch', desc: 'Sachlich, klare Linien', theme: 'sachlich', header: 'klassisch' },
   { id: 'balken',    name: 'Balken',    desc: 'Farbiges Titelband',     theme: 'freundlich', header: 'band' },
   { id: 'rahmen',    name: 'Rahmen',    desc: 'Titel im Kasten',        theme: 'verspielt', header: 'rahmen' },
@@ -4775,7 +4859,7 @@ function importLatex(src, fallbackTitle) {
   }
 
   return newSheet({
-    title, subject: 'Physik', grade: '8', theme: 'sachlich', pages
+    title, subject: 'Physik', grade: '8', theme: 'vorlage', pages
   });
 }
 
@@ -5953,6 +6037,12 @@ document.addEventListener('change', (e) => {
     found.block.rows[i][act === 'formula-name' ? 'name' : 'tex'] = el.value;
     touch();
     replaceBlock(found.block.id);
+  } else if (act === 'block-label') {
+    const found = selectedBlock();
+    if (!found) return;
+    found.block.label = el.value;
+    touch();
+    replaceBlock(found.block.id);
   } else if (act === 'match-left' || act === 'match-right') {
     const found = selectedBlock();
     if (!found || !Array.isArray(found.block.items)) return;
@@ -6285,6 +6375,21 @@ function boot() {
     localStorage.setItem('abw.seed.k7', '1');
     if (added) persist();
   }
+
+  // Einmalig: Klasse-7-Blätter auf die Vorlage (schwarz/weiß) umstellen
+  if (localStorage.getItem('abw.seed.k7style') !== '1') {
+    const titel = new Set(KLASSE7_SHEETS.map(s => s.title));
+    sheets.forEach(s => {
+      if (!titel.has(s.title)) return;
+      s.theme = 'vorlage';
+      (s.pages[0] ? s.pages[0].blocks : []).forEach(b => {
+        if (b.type === 'header') b.variant = 'vorlage';
+      });
+      s.updatedAt = nowISO();
+    });
+    localStorage.setItem('abw.seed.k7style', '1');
+    persist();
+  }
   document.body.classList.remove('editor-open');
   $('#view-editor').classList.add('hidden');
   $('#view-dashboard').classList.remove('hidden');
@@ -6315,7 +6420,7 @@ function boot() {
 
 /* === KLASSE7-DATEN (generiert, nicht bearbeiten) === */
 const KLASSE7_FOLDER = {"id": "k7-folder", "name": "Klasse 7"};
-const KLASSE7_SHEETS = [{"id": "k7-sheet-120550817", "title": "Akustik 1 – Wie entsteht Schall?", "subject": "Physik", "grade": "7", "font": "sans", "margin": "normal", "theme": "sachlich", "folderId": "k7-folder", "createdAt": "2026-11-17T18:59:12.721004+00:00", "updatedAt": "2026-11-17T18:59:12.721004+00:00", "pages": [{"id": "k7-p1", "blocks": [{"id": "k7-b1", "type": "header", "school": "Muster-Gymnasium", "subject": "Physik", "topic": "Akustik 1 – Wie entsteht Schall?", "showName": true, "showClass": true, "showDate": true, "variant": "klassisch"}, {"id": "k7-b2", "type": "text", "variant": "merke", "heading": "Ziel der Stunde", "body": "Du kannst Schallquellen benennen und erklären, dass Schall durch schwingende Körper entsteht."}, {"id": "k7-b3", "type": "text", "variant": "info", "heading": "Schall ist überall", "body": "Ob Türknallen, Vogelzwitschern oder das Summen eines Handys – ständig erreichen uns Geräusche. Von **Schall** sprechen wir, wenn ein Körper **schwingt** und diese Schwingung über ein Medium (zum Beispiel Luft) zu unserem Ohr gelangt."}, {"id": "k7-b4", "type": "block", "label": "A", "titel": "Einstieg: Hören und Beobachten"}, {"id": "k7-b5", "type": "task", "text": "Hörspaziergang: Schließe 30 Sekunden die Augen. Notiere fünf Geräusche und beschreibe sie möglichst genau.", "points": "2", "solution": "Individuelle Lösung, z. B. Tastaturklappern, Verkehr, Vogel, Kühlschrank, Schritte.", "parts": []}, {"id": "k7-b6", "type": "table", "header": true, "cells": [["Geräusch", "Schallquelle", "laut / leise", "hoch / tief"], ["", "", "", ""], ["", "", "", ""], ["", "", "", ""], ["", "", "", ""]]}, {"id": "k7-b7", "type": "task", "text": "Was haben alle Schallquellen gemeinsam? Formuliere eine Vermutung.", "points": "1", "solution": "Alle Schallquellen schwingen bzw. bewegen sich.", "parts": []}, {"id": "k7-b8", "type": "lines", "count": 3, "pattern": "dotted"}, {"id": "k7-b9", "type": "umbruch"}, {"id": "k7-b10", "type": "block", "label": "B", "titel": "Erklären: Schwingungen"}, {"id": "k7-b11", "type": "versuch", "titel": "Versuch: Die zitternde Stimmgabel", "material": "Stimmgabel, Schlagklöppel, Glas mit Wasser, Papierstreifen.", "durchfuehrung": ["Stimmgabel vorsichtig anschlagen und ans Ohr halten.", "Stimmgabel kurz in die Wasseroberfläche tauchen.", "Leichten Papierstreifen an die Gabel halten."], "linesB": 2, "linesA": 2, "auswertung": ""}, {"id": "k7-b12", "type": "task", "text": "Erkläre mit eigenen Worten, warum das Wasser spritzt und warum du einen Ton hörst. Nutze die Begriffe **Schwingung**, **Schallquelle** und **Luft**.", "points": "3", "solution": "Die Gabel schwingt und überträgt Energie auf das Wasser. Über die Luft gelangt die Schwingung als Schall zum Ohr.", "parts": []}, {"id": "k7-b13", "type": "cloze", "text": "Schall entsteht, wenn ein Körper [schwingt]. Diese Schwingung breitet sich über ein [Medium] aus und erreicht unser [Ohr]."}, {"id": "k7-b14", "type": "mc", "question": "Welche Aussagen sind richtig?", "options": [{"text": "Schall entsteht durch schwingende Körper.", "correct": true}, {"text": "Schall braucht keine Schwingung.", "correct": false}, {"text": "Ein Lautsprecher ist eine Schallquelle.", "correct": true}, {"text": "Schall kann man nur sehen.", "correct": false}]}, {"id": "k7-b15", "type": "total", "label": "Punkte gesamt", "note": "Unterschrift der Erziehungsberechtigten"}]}]}, {"id": "k7-sheet-562414780", "title": "Akustik 2 – Wie breitet sich Schall aus?", "subject": "Physik", "grade": "7", "font": "sans", "margin": "normal", "theme": "freundlich", "folderId": "k7-folder", "createdAt": "2026-11-17T18:59:12.721004+00:00", "updatedAt": "2026-11-17T18:59:12.721004+00:00", "pages": [{"id": "k7-p2", "blocks": [{"id": "k7-b16", "type": "header", "school": "Muster-Gymnasium", "subject": "Physik", "topic": "Akustik 2 – Wie breitet sich Schall aus?", "showName": true, "showClass": true, "showDate": true, "variant": "band"}, {"id": "k7-b17", "type": "text", "variant": "merke", "heading": "Ziel der Stunde", "body": "Du kannst erklären, dass Schall ein Ausbreitungsmedium braucht, und die Schallgeschwindigkeit für einfache Rechnungen nutzen."}, {"id": "k7-b18", "type": "text", "variant": "merke", "heading": "Merke", "body": "Schall breitet sich als Schwingung in einem **Medium** aus (Luft, Wasser, Metall). Im **Vakuum** ist kein Schall hörbar. In Luft ist Schall etwa **340 m/s** schnell."}, {"id": "k7-b19", "type": "block", "label": "A", "titel": "Ausbreitung untersuchen"}, {"id": "k7-b20", "type": "versuch", "titel": "Versuch: Schall braucht einen Träger", "material": "Wecker (oder Handy), Glasglocke mit Pumpe, Vakuumpumpe.", "durchfuehrung": ["Wecker in die Glocke legen und einschalten.", "Luft langsam absaugen.", "Geräusch beobachten und beschreiben."], "linesB": 2, "linesA": 2, "auswertung": ""}, {"id": "k7-b21", "type": "task", "text": "Erkläre, warum der Wecker immer leiser wird, obwohl er weiter klingelt.", "points": "2", "solution": "Die Luft als Medium wird entfernt; ohne Medium kann sich die Schwingung nicht ausbreiten.", "parts": []}, {"id": "k7-b22", "type": "block", "label": "B", "titel": "Rechnen: Schallgeschwindigkeit"}, {"id": "k7-b23", "type": "formula", "tex": "v = \\frac{s}{t} \\quad\\Rightarrow\\quad s = v \\cdot t"}, {"id": "k7-b24", "type": "task", "text": "Bei einem Gewitter hörst du den Donner **3 s** nach dem Blitz. Wie weit ist das Gewitter entfernt? (v = 340 m/s)", "points": "4", "solution": "s = v · t = 340 m/s · 3 s = 1020 m ≈ 1 km.", "parts": []}, {"id": "k7-b25", "type": "task", "text": "Ein Echo kommt nach 0,6 s zurück. Wie weit ist die Wand entfernt? Achte darauf, dass der Schall hin und zurück läuft.", "points": "4", "solution": "s = v · t = 340 m/s · 0,6 s = 204 m (hin und zurück), also 102 m bis zur Wand.", "parts": []}, {"id": "k7-b26", "type": "block", "label": "C", "titel": "Sichern"}, {"id": "k7-b27", "type": "axes", "xLabel": "t in s", "yLabel": "s in m", "caption": "Weg des Schalls bei 340 m/s", "grid": true, "numbers": true, "square": false, "xMin": 0, "xMax": 3, "xStep": 0.5, "yMin": 0, "yMax": 1200, "yStep": 200, "width": 100, "heightMM": 95, "legend": []}, {"id": "k7-b28", "type": "cloze", "text": "Schall braucht ein [Medium]. Im [Vakuum] kann er sich nicht ausbreiten. Die Schallgeschwindigkeit in Luft beträgt etwa [340 m/s]."}, {"id": "k7-b29", "type": "mc", "question": "Wie weit kommt Schall in 2 Sekunden (Luft)?", "options": [{"text": "etwa 680 m", "correct": true}, {"text": "etwa 170 m", "correct": false}, {"text": "etwa 340 m", "correct": false}, {"text": "etwa 2 m", "correct": false}]}, {"id": "k7-b30", "type": "total", "label": "Punkte gesamt", "note": "Unterschrift der Erziehungsberechtigten"}]}]}, {"id": "k7-sheet-434879311", "title": "Akustik 3 – Amplitude und Frequenz", "subject": "Physik", "grade": "7", "font": "sans", "margin": "normal", "theme": "verspielt", "folderId": "k7-folder", "createdAt": "2026-11-17T18:59:12.721004+00:00", "updatedAt": "2026-11-17T18:59:12.721004+00:00", "pages": [{"id": "k7-p3", "blocks": [{"id": "k7-b31", "type": "header", "school": "Muster-Gymnasium", "subject": "Physik", "topic": "Akustik 3 – Amplitude und Frequenz", "showName": true, "showClass": true, "showDate": true, "variant": "rahmen"}, {"id": "k7-b32", "type": "text", "variant": "merke", "heading": "Ziel der Stunde", "body": "Du kannst Amplitude und Frequenz aus einem Schwingungsdiagramm ablesen und erklären, wie sie Lautstärke und Tonhöhe bestimmen."}, {"id": "k7-b33", "type": "text", "variant": "merke", "heading": "Merke", "body": "**Amplitude** = größte Auslenkung → bestimmt die **Lautstärke**. **Frequenz** = Schwingungen pro Sekunde (Einheit **Hertz, Hz**) → bestimmt die **Tonhöhe**."}, {"id": "k7-b34", "type": "defbox", "term": "Periode T", "def": "Zeit für eine vollständige Schwingung. Es gilt: f = 1 / T."}, {"id": "k7-b35", "type": "formula", "tex": "f = \\frac{1}{T}"}, {"id": "k7-b36", "type": "block", "label": "A", "titel": "Diagramm lesen"}, {"id": "k7-b37", "type": "axes", "xLabel": "t in ms", "yLabel": "Auslenkung", "caption": "Schwingung einer Stimmgabel (schematisch)", "grid": true, "numbers": true, "square": false, "xMin": 0, "xMax": 20, "xStep": 2, "yMin": 0, "yMax": 10, "yStep": 2, "width": 100, "heightMM": 95, "legend": []}, {"id": "k7-b38", "type": "task", "text": "Im Diagramm dauert eine vollständige Schwingung **4 ms**. Berechne die Frequenz in Hertz.", "points": "3", "solution": "T = 4 ms = 0,004 s → f = 1/0,004 s = 250 Hz.", "parts": []}, {"id": "k7-b39", "type": "task", "text": "Eine Saite schwingt mit 440 Hz. Wie lange dauert eine Schwingung?", "points": "3", "solution": "T = 1/f = 1/440 s ≈ 0,00227 s ≈ 2,3 ms.", "parts": []}, {"id": "k7-b40", "type": "block", "label": "B", "titel": "Übertragen"}, {"id": "k7-b41", "type": "match", "titel": "Ordne zu:", "items": [{"left": "große Amplitude", "right": "lauter Ton"}, {"left": "kleine Amplitude", "right": "leiser Ton"}, {"left": "hohe Frequenz", "right": "hoher Ton"}, {"left": "kleine Frequenz", "right": "tiefer Ton"}], "order": [3, 2, 1, 0]}, {"id": "k7-b42", "type": "cloze", "text": "Die Amplitude bestimmt die [Lautstärke], die Frequenz die [Tonhöhe]. Die Einheit der Frequenz ist [Hertz]."}, {"id": "k7-b43", "type": "mc", "question": "Ein Ton wird höher. Was ändert sich?", "options": [{"text": "Die Frequenz steigt.", "correct": true}, {"text": "Die Amplitude steigt.", "correct": false}, {"text": "Die Frequenz sinkt.", "correct": false}, {"text": "Die Periode steigt.", "correct": false}]}, {"id": "k7-b44", "type": "total", "label": "Punkte gesamt", "note": "Unterschrift der Erziehungsberechtigten"}]}, {"id": "k7-p3b", "blocks": [{"id": "k7-b45", "type": "header", "school": "Muster-Gymnasium", "subject": "Physik", "topic": "Akustik 3 – Übungen", "showName": true, "showClass": true, "showDate": true, "variant": "minimal"}, {"id": "k7-b46", "type": "block", "label": "C", "titel": "Vertiefung"}, {"id": "k7-b47", "type": "table", "header": true, "cells": [["Frequenz f", "Periode T", "Tonhöhe"], ["100 Hz", "", ""], ["", "0,01 s", ""], ["1000 Hz", "", ""], ["", "2 ms", ""]]}, {"id": "k7-b48", "type": "task", "text": "Ergänze die Tabelle.", "points": "4", "solution": "100 Hz → 0,01 s; T = 0,01 s → 100 Hz; 1000 Hz → 1 ms; T = 2 ms → 500 Hz.", "parts": []}, {"id": "k7-b49", "type": "lines", "count": 4, "pattern": "dotted"}, {"id": "k7-b50", "type": "signature", "label": "Datum, Unterschrift"}]}]}, {"id": "k7-sheet-137179392", "title": "Akustik 4 – Hören, Lärm und Schallschutz", "subject": "Physik", "grade": "7", "font": "sans", "margin": "normal", "theme": "clean", "folderId": "k7-folder", "createdAt": "2026-11-17T18:59:12.721004+00:00", "updatedAt": "2026-11-17T18:59:12.721004+00:00", "pages": [{"id": "k7-p4", "blocks": [{"id": "k7-b51", "type": "header", "school": "Muster-Gymnasium", "subject": "Physik", "topic": "Akustik 4 – Hören, Lärm und Schallschutz", "showName": true, "showClass": true, "showDate": true, "variant": "klassisch"}, {"id": "k7-b52", "type": "text", "variant": "merke", "heading": "Ziel der Stunde", "body": "Du kannst das Ohr als Schallempfänger beschreiben und begründen, wann Schall zu Lärm wird und wie man sich schützt."}, {"id": "k7-b53", "type": "text", "variant": "info", "heading": "Wie wir hören", "body": "Das **Ohr** nimmt Schall auf: Ohrmuschel → Gehörgang → Trommelfell → Gehörknöchelchen → Innenohr. Der Hörbereich des Menschen liegt etwa zwischen **16 Hz und 20 000 Hz**."}, {"id": "k7-b54", "type": "block", "label": "A", "titel": "Lärm bewerten"}, {"id": "k7-b55", "type": "task", "text": "Nenne drei Situationen aus deinem Alltag, in denen Schall zu **Lärm** wird. Begründe jeweils kurz.", "points": "3", "solution": "z. B. Baustelle (dauerhaft laut), Kopfhörer zu laut (Gehör), Bohrmaschine im Unterricht (Konzentration).", "parts": []}, {"id": "k7-b56", "type": "task", "text": "Zwei Personen streiten über laute Musik im Zug. Formuliere je ein Argument für beide Seiten.", "points": "2", "solution": "Dafür: Freiheit, eigene Musik. Dagegen: Ruhebedürfnis, Gesundheit, Rücksichtnahme.", "parts": []}, {"id": "k7-b57", "type": "block", "label": "B", "titel": "Schallschutz"}, {"id": "k7-b58", "type": "defbox", "term": "Schallschutz", "def": "Maßnahmen, die verhindern, dass Schall stört oder das Gehör schädigt – z. B. Dämmung, Abstand, Gehörschutz, leiseres Gerät."}, {"id": "k7-b59", "type": "task", "text": "Ordne drei Schallschutz-Maßnahmen den Begriffen **Dämmung**, **Abstand** und **Gehörschutz** zu.", "points": "3", "solution": "Dämmung: Teppich, Schaumstoff. Abstand: weiter weg von der Quelle. Gehörschutz: Ohrstöpsel, Kapselgehörschutz.", "parts": []}, {"id": "k7-b60", "type": "cloze", "text": "Schall wird im Ohr vom [Trommelfell] aufgenommen. Zu lauter Schall kann das [Gehör] schädigen. Schutz bieten [Ohrstöpsel] oder Abstand."}, {"id": "k7-b61", "type": "mc", "question": "Welche Aussage ist richtig?", "options": [{"text": "Lärm ist Schall, der stört oder schadet.", "correct": true}, {"text": "Jeder Schall ist Lärm.", "correct": false}, {"text": "Lärm kann das Gehör nicht schädigen.", "correct": false}, {"text": "Schallschutz macht Geräte immer lauter.", "correct": false}]}, {"id": "k7-b62", "type": "total", "label": "Punkte gesamt", "note": ""}, {"id": "k7-b63", "type": "signature", "label": "Datum, Unterschrift der Erziehungsberechtigten"}]}]}, {"id": "k7-sheet-490930806", "title": "Messgeräte 1 – Messgrößen und Einheiten", "subject": "Physik", "grade": "7", "font": "sans", "margin": "normal", "theme": "sachlich", "folderId": "k7-folder", "createdAt": "2026-11-17T18:59:12.721004+00:00", "updatedAt": "2026-11-17T18:59:12.721004+00:00", "pages": [{"id": "k7-p5", "blocks": [{"id": "k7-b64", "type": "header", "school": "Muster-Gymnasium", "subject": "Physik", "topic": "Messgeräte 1 – Messgrößen und Einheiten", "showName": true, "showClass": true, "showDate": true, "variant": "band"}, {"id": "k7-b65", "type": "text", "variant": "merke", "heading": "Ziel der Stunde", "body": "Du kannst Messgröße, Einheit und Messgerät unterscheiden und mit Vorsätzen (k, m, µ) rechnen."}, {"id": "k7-b66", "type": "text", "variant": "merke", "heading": "Merke", "body": "Jede Messung besteht aus **Zahl** und **Einheit**. Physikalische Größen haben feste Einheiten (SI-System). Vorsätze: k = 1000 · m = 1/1000 · µ = 1/1 000 000."}, {"id": "k7-b67", "type": "block", "label": "A", "titel": "Größen und Geräte"}, {"id": "k7-b68", "type": "table", "header": true, "cells": [["Messgröße", "Einheit", "Messgerät"], ["Länge", "", ""], ["Masse", "", ""], ["Zeit", "", ""], ["Temperatur", "", ""]]}, {"id": "k7-b69", "type": "task", "text": "Ergänze die Tabelle.", "points": "4", "solution": "Länge: Meter (m), Lineal/Maßband; Masse: Kilogramm (kg), Waage; Zeit: Sekunde (s), Stoppuhr; Temperatur: Grad Celsius (°C), Thermometer.", "parts": []}, {"id": "k7-b70", "type": "match", "titel": "Ordne Größe und Einheit zu:", "items": [{"left": "Länge", "right": "Meter (m)"}, {"left": "Masse", "right": "Kilogramm (kg)"}, {"left": "Zeit", "right": "Sekunde (s)"}, {"left": "Temperatur", "right": "Grad Celsius (°C)"}], "order": [3, 2, 1, 0]}, {"id": "k7-b71", "type": "block", "label": "B", "titel": "Vorsätze"}, {"id": "k7-b72", "type": "task", "text": "Rechne um: 2500 m in km, 0,3 A in mA, 450 mg in g, 2,5 kV in V.", "points": "4", "solution": "2,5 km; 300 mA; 0,45 g; 2500 V.", "parts": []}, {"id": "k7-b73", "type": "cloze", "text": "1 km sind [1000] m. 1 mA sind [0,001] A. Die Einheit der Masse ist [Kilogramm]."}, {"id": "k7-b74", "type": "mc", "question": "Welche Angabe ist vollständig?", "options": [{"text": "12,5 cm", "correct": true}, {"text": "12,5", "correct": false}, {"text": "cm", "correct": false}, {"text": "12,5 Grad", "correct": false}]}, {"id": "k7-b75", "type": "total", "label": "Punkte gesamt", "note": "Unterschrift der Erziehungsberechtigten"}]}]}, {"id": "k7-sheet-543563397", "title": "Messgeräte 2 – Temperatur messen", "subject": "Physik", "grade": "7", "font": "sans", "margin": "normal", "theme": "freundlich", "folderId": "k7-folder", "createdAt": "2026-11-17T18:59:12.721004+00:00", "updatedAt": "2026-11-17T18:59:12.721004+00:00", "pages": [{"id": "k7-p6", "blocks": [{"id": "k7-b76", "type": "header", "school": "Muster-Gymnasium", "subject": "Physik", "topic": "Messgeräte 2 – Temperatur messen", "showName": true, "showClass": true, "showDate": true, "variant": "rahmen"}, {"id": "k7-b77", "type": "text", "variant": "merke", "heading": "Ziel der Stunde", "body": "Du kannst eine Messreihe durchführen, Messwerte in einer Tabelle festhalten und daraus ein Diagramm zeichnen."}, {"id": "k7-b78", "type": "text", "variant": "info", "heading": "Wie misst man Temperatur?", "body": "Thermometer nutzen die **Ausdehnung** von Flüssigkeiten oder die Spannung eines Sensors. Eine Skala muss **geeicht** sein, sonst sind die Werte nicht vergleichbar."}, {"id": "k7-b79", "type": "block", "label": "A", "titel": "Versuch: Erwärmen"}, {"id": "k7-b80", "type": "versuch", "titel": "Versuch: Wasser erwärmen", "material": "Becherglas, Wasser, Thermometer, Heizplatte, Stoppuhr.", "durchfuehrung": ["200 ml Wasser in das Becherglas geben.", "Thermometer eintauchen und Starttemperatur ablesen.", "Alle 2 Minuten die Temperatur messen und notieren."], "linesB": 2, "linesA": 2, "auswertung": ""}, {"id": "k7-b81", "type": "table", "header": true, "cells": [["Zeit in min", "0", "2", "4", "6", "8", "10"], ["Temperatur in °C", "", "", "", "", "", ""]]}, {"id": "k7-b82", "type": "block", "label": "B", "titel": "Auswerten"}, {"id": "k7-b83", "type": "axes", "xLabel": "t in min", "yLabel": "T in °C", "caption": "Erwärmungskurve", "grid": true, "numbers": true, "square": false, "xMin": 0, "xMax": 10, "xStep": 2, "yMin": 0, "yMax": 100, "yStep": 10, "width": 100, "heightMM": 95, "legend": []}, {"id": "k7-b84", "type": "task", "text": "Zeichne die Messwerte in das Diagramm und beschreibe den Verlauf.", "points": "4", "solution": "Die Temperatur steigt zunächst gleichmäßig an; die Kurve flacht bei Annäherung an den Siedepunkt ab.", "parts": []}, {"id": "k7-b85", "type": "task", "text": "Ein Thermometer zeigt bei Eiswasser 3 °C statt 0 °C. Was bedeutet das für alle Messwerte?", "points": "2", "solution": "Das Thermometer ist falsch geeicht; alle Werte sind um 3 °C zu hoch und müssen korrigiert werden.", "parts": []}, {"id": "k7-b86", "type": "mc", "question": "Was gehört zu einer guten Messreihe?", "options": [{"text": "Mehrere Messungen und ein Mittelwert.", "correct": true}, {"text": "Nur ein einziger Wert.", "correct": false}, {"text": "Angabe ohne Einheit.", "correct": false}, {"text": "Messung ohne Gerät.", "correct": false}]}, {"id": "k7-b87", "type": "total", "label": "Punkte gesamt", "note": ""}, {"id": "k7-b88", "type": "signature", "label": "Datum, Unterschrift"}]}]}];
+const KLASSE7_SHEETS = [{"id": "k7-sheet-158651030", "title": "Akustik 1 – Wie entsteht Schall?", "subject": "Physik", "grade": "7", "font": "sans", "margin": "normal", "theme": "vorlage", "folderId": "k7-folder", "createdAt": "2026-11-18T08:16:01.682087+00:00", "updatedAt": "2026-11-18T08:16:01.682087+00:00", "pages": [{"id": "k7-p1", "blocks": [{"id": "k7-b1", "type": "header", "school": "Muster-Gymnasium", "subject": "Physik", "topic": "Akustik 1 – Wie entsteht Schall?", "showName": false, "showClass": true, "showDate": true, "variant": "vorlage"}, {"id": "k7-b2", "type": "text", "variant": "merke", "heading": "Ziel der Stunde", "body": "Du kannst Schallquellen benennen und erklären, dass Schall durch schwingende Körper entsteht."}, {"id": "k7-b3", "type": "text", "variant": "info", "heading": "Schall ist überall", "body": "Ob Türknallen, Vogelzwitschern oder das Summen eines Handys – ständig erreichen uns Geräusche. Von **Schall** sprechen wir, wenn ein Körper **schwingt** und diese Schwingung über ein Medium (zum Beispiel Luft) zu unserem Ohr gelangt."}, {"id": "k7-b4", "type": "block", "label": "A", "titel": "Einstieg: Hören und Beobachten"}, {"id": "k7-b5", "type": "task", "text": "Hörspaziergang: Schließe 30 Sekunden die Augen. Notiere fünf Geräusche und beschreibe sie möglichst genau.", "points": "", "solution": "Individuelle Lösung, z. B. Tastaturklappern, Verkehr, Vogel, Kühlschrank, Schritte.", "parts": []}, {"id": "k7-b6", "type": "table", "header": true, "cells": [["Geräusch", "Schallquelle", "laut / leise", "hoch / tief"], ["", "", "", ""], ["", "", "", ""], ["", "", "", ""], ["", "", "", ""]]}, {"id": "k7-b7", "type": "task", "text": "Was haben alle Schallquellen gemeinsam? Formuliere eine Vermutung.", "points": "", "solution": "Alle Schallquellen schwingen bzw. bewegen sich.", "parts": []}, {"id": "k7-b8", "type": "lines", "count": 3, "pattern": "dotted"}]}, {"id": "k7-p1b", "blocks": [{"id": "k7-b9", "type": "header", "school": "Muster-Gymnasium", "subject": "Physik", "topic": "Akustik 1 – Wie entsteht Schall?", "showName": false, "showClass": true, "showDate": true, "variant": "vorlage"}, {"id": "k7-b10", "type": "block", "label": "B", "titel": "Erklären: Schwingungen"}, {"id": "k7-b11", "type": "versuch", "titel": "Versuch: Die zitternde Stimmgabel", "material": "Stimmgabel, Schlagklöppel, Glas mit Wasser, Papierstreifen.", "durchfuehrung": ["Stimmgabel vorsichtig anschlagen und ans Ohr halten.", "Stimmgabel kurz in die Wasseroberfläche tauchen.", "Leichten Papierstreifen an die Gabel halten."], "linesB": 2, "linesA": 2, "auswertung": ""}, {"id": "k7-b12", "type": "task", "text": "Erkläre mit eigenen Worten, warum das Wasser spritzt und warum du einen Ton hörst. Nutze die Begriffe **Schwingung**, **Schallquelle** und **Luft**.", "points": "", "solution": "Die Gabel schwingt und überträgt Energie auf das Wasser. Über die Luft gelangt die Schwingung als Schall zum Ohr.", "parts": []}, {"id": "k7-b13", "type": "cloze", "text": "Schall entsteht, wenn ein Körper [schwingt]. Diese Schwingung breitet sich über ein [Medium] aus und erreicht unser [Ohr]."}, {"id": "k7-b14", "type": "mc", "question": "Welche Aussagen sind richtig?", "options": [{"text": "Schall entsteht durch schwingende Körper.", "correct": true}, {"text": "Schall braucht keine Schwingung.", "correct": false}, {"text": "Ein Lautsprecher ist eine Schallquelle.", "correct": true}, {"text": "Schall kann man nur sehen.", "correct": false}]}]}]}, {"id": "k7-sheet-266028363", "title": "Akustik 2 – Wie breitet sich Schall aus?", "subject": "Physik", "grade": "7", "font": "sans", "margin": "normal", "theme": "vorlage", "folderId": "k7-folder", "createdAt": "2026-11-18T08:16:01.682087+00:00", "updatedAt": "2026-11-18T08:16:01.682087+00:00", "pages": [{"id": "k7-p2", "blocks": [{"id": "k7-b15", "type": "header", "school": "Muster-Gymnasium", "subject": "Physik", "topic": "Akustik 2 – Wie breitet sich Schall aus?", "showName": false, "showClass": true, "showDate": true, "variant": "vorlage"}, {"id": "k7-b16", "type": "text", "variant": "merke", "heading": "Ziel der Stunde", "body": "Du kannst erklären, dass Schall ein Ausbreitungsmedium braucht, und die Schallgeschwindigkeit für einfache Rechnungen nutzen."}, {"id": "k7-b17", "type": "text", "variant": "merke", "heading": "Merke", "body": "Schall breitet sich als Schwingung in einem **Medium** aus (Luft, Wasser, Metall). Im **Vakuum** ist kein Schall hörbar. In Luft ist Schall etwa **340 m/s** schnell."}, {"id": "k7-b18", "type": "block", "label": "A", "titel": "Ausbreitung untersuchen"}, {"id": "k7-b19", "type": "versuch", "titel": "Versuch: Schall braucht einen Träger", "material": "Wecker (oder Handy), Glasglocke mit Pumpe, Vakuumpumpe.", "durchfuehrung": ["Wecker in die Glocke legen und einschalten.", "Luft langsam absaugen.", "Geräusch beobachten und beschreiben."], "linesB": 2, "linesA": 2, "auswertung": ""}, {"id": "k7-b20", "type": "task", "text": "Erkläre, warum der Wecker immer leiser wird, obwohl er weiter klingelt.", "points": "", "solution": "Die Luft als Medium wird entfernt; ohne Medium kann sich die Schwingung nicht ausbreiten.", "parts": []}, {"id": "k7-b21", "type": "block", "label": "B", "titel": "Rechnen: Schallgeschwindigkeit"}, {"id": "k7-b22", "type": "formula", "tex": "v = \\frac{s}{t} \\quad\\Rightarrow\\quad s = v \\cdot t"}, {"id": "k7-b23", "type": "task", "text": "Bei einem Gewitter hörst du den Donner **3 s** nach dem Blitz. Wie weit ist das Gewitter entfernt? (v = 340 m/s)", "points": "", "solution": "s = v · t = 340 m/s · 3 s = 1020 m ≈ 1 km.", "parts": []}, {"id": "k7-b24", "type": "task", "text": "Ein Echo kommt nach 0,6 s zurück. Wie weit ist die Wand entfernt? Achte darauf, dass der Schall hin und zurück läuft.", "points": "", "solution": "s = v · t = 340 m/s · 0,6 s = 204 m (hin und zurück), also 102 m bis zur Wand.", "parts": []}, {"id": "k7-b25", "type": "block", "label": "C", "titel": "Sichern"}, {"id": "k7-b26", "type": "axes", "xLabel": "t in s", "yLabel": "s in m", "caption": "Weg des Schalls bei 340 m/s", "grid": true, "numbers": true, "square": false, "xMin": 0, "xMax": 3, "xStep": 0.5, "yMin": 0, "yMax": 1200, "yStep": 200, "width": 100, "heightMM": 95, "legend": []}, {"id": "k7-b27", "type": "cloze", "text": "Schall braucht ein [Medium]. Im [Vakuum] kann er sich nicht ausbreiten. Die Schallgeschwindigkeit in Luft beträgt etwa [340 m/s]."}, {"id": "k7-b28", "type": "mc", "question": "Wie weit kommt Schall in 2 Sekunden (Luft)?", "options": [{"text": "etwa 680 m", "correct": true}, {"text": "etwa 170 m", "correct": false}, {"text": "etwa 340 m", "correct": false}, {"text": "etwa 2 m", "correct": false}]}]}]}, {"id": "k7-sheet-105458000", "title": "Akustik 3 – Amplitude und Frequenz", "subject": "Physik", "grade": "7", "font": "sans", "margin": "normal", "theme": "vorlage", "folderId": "k7-folder", "createdAt": "2026-11-18T08:16:01.682087+00:00", "updatedAt": "2026-11-18T08:16:01.682087+00:00", "pages": [{"id": "k7-p3", "blocks": [{"id": "k7-b29", "type": "header", "school": "Muster-Gymnasium", "subject": "Physik", "topic": "Akustik 3 – Amplitude und Frequenz", "showName": false, "showClass": true, "showDate": true, "variant": "vorlage"}, {"id": "k7-b30", "type": "text", "variant": "merke", "heading": "Ziel der Stunde", "body": "Du kannst Amplitude und Frequenz aus einem Schwingungsdiagramm ablesen und erklären, wie sie Lautstärke und Tonhöhe bestimmen."}, {"id": "k7-b31", "type": "text", "variant": "merke", "heading": "Merke", "body": "**Amplitude** = größte Auslenkung → bestimmt die **Lautstärke**. **Frequenz** = Schwingungen pro Sekunde (Einheit **Hertz, Hz**) → bestimmt die **Tonhöhe**."}, {"id": "k7-b32", "type": "defbox", "term": "Periode T", "def": "Zeit für eine vollständige Schwingung. Es gilt: f = 1 / T."}, {"id": "k7-b33", "type": "formula", "tex": "f = \\frac{1}{T}"}, {"id": "k7-b34", "type": "block", "label": "A", "titel": "Diagramm lesen"}, {"id": "k7-b35", "type": "axes", "xLabel": "t in ms", "yLabel": "Auslenkung", "caption": "Schwingung einer Stimmgabel (schematisch)", "grid": true, "numbers": true, "square": false, "xMin": 0, "xMax": 20, "xStep": 2, "yMin": 0, "yMax": 10, "yStep": 2, "width": 100, "heightMM": 95, "legend": []}, {"id": "k7-b36", "type": "task", "text": "Im Diagramm dauert eine vollständige Schwingung **4 ms**. Berechne die Frequenz in Hertz.", "points": "", "solution": "T = 4 ms = 0,004 s → f = 1/0,004 s = 250 Hz.", "parts": []}, {"id": "k7-b37", "type": "task", "text": "Eine Saite schwingt mit 440 Hz. Wie lange dauert eine Schwingung?", "points": "", "solution": "T = 1/f = 1/440 s ≈ 0,00227 s ≈ 2,3 ms.", "parts": []}, {"id": "k7-b38", "type": "block", "label": "B", "titel": "Übertragen"}, {"id": "k7-b39", "type": "match", "titel": "Ordne zu:", "items": [{"left": "große Amplitude", "right": "lauter Ton"}, {"left": "kleine Amplitude", "right": "leiser Ton"}, {"left": "hohe Frequenz", "right": "hoher Ton"}, {"left": "kleine Frequenz", "right": "tiefer Ton"}], "order": [3, 2, 1, 0]}, {"id": "k7-b40", "type": "cloze", "text": "Die Amplitude bestimmt die [Lautstärke], die Frequenz die [Tonhöhe]. Die Einheit der Frequenz ist [Hertz]."}, {"id": "k7-b41", "type": "mc", "question": "Ein Ton wird höher. Was ändert sich?", "options": [{"text": "Die Frequenz steigt.", "correct": true}, {"text": "Die Amplitude steigt.", "correct": false}, {"text": "Die Frequenz sinkt.", "correct": false}, {"text": "Die Periode steigt.", "correct": false}]}]}, {"id": "k7-p3b", "blocks": [{"id": "k7-b42", "type": "header", "school": "Muster-Gymnasium", "subject": "Physik", "topic": "Akustik 3 – Übungen", "showName": false, "showClass": true, "showDate": true, "variant": "vorlage"}, {"id": "k7-b43", "type": "block", "label": "C", "titel": "Vertiefung"}, {"id": "k7-b44", "type": "table", "header": true, "cells": [["Frequenz f", "Periode T", "Tonhöhe"], ["100 Hz", "", ""], ["", "0,01 s", ""], ["1000 Hz", "", ""], ["", "2 ms", ""]]}, {"id": "k7-b45", "type": "task", "text": "Ergänze die Tabelle.", "points": "", "solution": "100 Hz → 0,01 s; T = 0,01 s → 100 Hz; 1000 Hz → 1 ms; T = 2 ms → 500 Hz.", "parts": []}, {"id": "k7-b46", "type": "lines", "count": 4, "pattern": "dotted"}, {"id": "k7-b47", "type": "signature", "label": "Datum, Unterschrift"}]}]}, {"id": "k7-sheet-639230633", "title": "Akustik 4 – Hören, Lärm und Schallschutz", "subject": "Physik", "grade": "7", "font": "sans", "margin": "normal", "theme": "vorlage", "folderId": "k7-folder", "createdAt": "2026-11-18T08:16:01.682087+00:00", "updatedAt": "2026-11-18T08:16:01.682087+00:00", "pages": [{"id": "k7-p4", "blocks": [{"id": "k7-b48", "type": "header", "school": "Muster-Gymnasium", "subject": "Physik", "topic": "Akustik 4 – Hören, Lärm und Schallschutz", "showName": false, "showClass": true, "showDate": true, "variant": "vorlage"}, {"id": "k7-b49", "type": "text", "variant": "merke", "heading": "Ziel der Stunde", "body": "Du kannst das Ohr als Schallempfänger beschreiben und begründen, wann Schall zu Lärm wird und wie man sich schützt."}, {"id": "k7-b50", "type": "text", "variant": "info", "heading": "Wie wir hören", "body": "Das **Ohr** nimmt Schall auf: Ohrmuschel → Gehörgang → Trommelfell → Gehörknöchelchen → Innenohr. Der Hörbereich des Menschen liegt etwa zwischen **16 Hz und 20 000 Hz**."}, {"id": "k7-b51", "type": "block", "label": "A", "titel": "Lärm bewerten"}, {"id": "k7-b52", "type": "task", "text": "Nenne drei Situationen aus deinem Alltag, in denen Schall zu **Lärm** wird. Begründe jeweils kurz.", "points": "", "solution": "z. B. Baustelle (dauerhaft laut), Kopfhörer zu laut (Gehör), Bohrmaschine im Unterricht (Konzentration).", "parts": []}, {"id": "k7-b53", "type": "task", "text": "Zwei Personen streiten über laute Musik im Zug. Formuliere je ein Argument für beide Seiten.", "points": "", "solution": "Dafür: Freiheit, eigene Musik. Dagegen: Ruhebedürfnis, Gesundheit, Rücksichtnahme.", "parts": []}, {"id": "k7-b54", "type": "block", "label": "B", "titel": "Schallschutz"}, {"id": "k7-b55", "type": "defbox", "term": "Schallschutz", "def": "Maßnahmen, die verhindern, dass Schall stört oder das Gehör schädigt – z. B. Dämmung, Abstand, Gehörschutz, leiseres Gerät."}, {"id": "k7-b56", "type": "task", "text": "Ordne drei Schallschutz-Maßnahmen den Begriffen **Dämmung**, **Abstand** und **Gehörschutz** zu.", "points": "", "solution": "Dämmung: Teppich, Schaumstoff. Abstand: weiter weg von der Quelle. Gehörschutz: Ohrstöpsel, Kapselgehörschutz.", "parts": []}, {"id": "k7-b57", "type": "cloze", "text": "Schall wird im Ohr vom [Trommelfell] aufgenommen. Zu lauter Schall kann das [Gehör] schädigen. Schutz bieten [Ohrstöpsel] oder Abstand."}, {"id": "k7-b58", "type": "mc", "question": "Welche Aussage ist richtig?", "options": [{"text": "Lärm ist Schall, der stört oder schadet.", "correct": true}, {"text": "Jeder Schall ist Lärm.", "correct": false}, {"text": "Lärm kann das Gehör nicht schädigen.", "correct": false}, {"text": "Schallschutz macht Geräte immer lauter.", "correct": false}]}, {"id": "k7-b59", "type": "signature", "label": "Datum, Unterschrift der Erziehungsberechtigten"}]}]}, {"id": "k7-sheet-228305386", "title": "Messgeräte 1 – Messgrößen und Einheiten", "subject": "Physik", "grade": "7", "font": "sans", "margin": "normal", "theme": "vorlage", "folderId": "k7-folder", "createdAt": "2026-11-18T08:16:01.682087+00:00", "updatedAt": "2026-11-18T08:16:01.682087+00:00", "pages": [{"id": "k7-p5", "blocks": [{"id": "k7-b60", "type": "header", "school": "Muster-Gymnasium", "subject": "Physik", "topic": "Messgeräte 1 – Messgrößen und Einheiten", "showName": false, "showClass": true, "showDate": true, "variant": "vorlage"}, {"id": "k7-b61", "type": "text", "variant": "merke", "heading": "Ziel der Stunde", "body": "Du kannst Messgröße, Einheit und Messgerät unterscheiden und mit Vorsätzen (k, m, µ) rechnen."}, {"id": "k7-b62", "type": "text", "variant": "merke", "heading": "Merke", "body": "Jede Messung besteht aus **Zahl** und **Einheit**. Physikalische Größen haben feste Einheiten (SI-System). Vorsätze: k = 1000 · m = 1/1000 · µ = 1/1 000 000."}, {"id": "k7-b63", "type": "block", "label": "A", "titel": "Größen und Geräte"}, {"id": "k7-b64", "type": "table", "header": true, "cells": [["Messgröße", "Einheit", "Messgerät"], ["Länge", "", ""], ["Masse", "", ""], ["Zeit", "", ""], ["Temperatur", "", ""]]}, {"id": "k7-b65", "type": "task", "text": "Ergänze die Tabelle.", "points": "", "solution": "Länge: Meter (m), Lineal/Maßband; Masse: Kilogramm (kg), Waage; Zeit: Sekunde (s), Stoppuhr; Temperatur: Grad Celsius (°C), Thermometer.", "parts": []}, {"id": "k7-b66", "type": "match", "titel": "Ordne Größe und Einheit zu:", "items": [{"left": "Länge", "right": "Meter (m)"}, {"left": "Masse", "right": "Kilogramm (kg)"}, {"left": "Zeit", "right": "Sekunde (s)"}, {"left": "Temperatur", "right": "Grad Celsius (°C)"}], "order": [3, 2, 1, 0]}, {"id": "k7-b67", "type": "block", "label": "B", "titel": "Vorsätze"}, {"id": "k7-b68", "type": "task", "text": "Rechne um: 2500 m in km, 0,3 A in mA, 450 mg in g, 2,5 kV in V.", "points": "", "solution": "2,5 km; 300 mA; 0,45 g; 2500 V.", "parts": []}, {"id": "k7-b69", "type": "cloze", "text": "1 km sind [1000] m. 1 mA sind [0,001] A. Die Einheit der Masse ist [Kilogramm]."}, {"id": "k7-b70", "type": "mc", "question": "Welche Angabe ist vollständig?", "options": [{"text": "12,5 cm", "correct": true}, {"text": "12,5", "correct": false}, {"text": "cm", "correct": false}, {"text": "12,5 Grad", "correct": false}]}]}]}, {"id": "k7-sheet-980424738", "title": "Messgeräte 2 – Temperatur messen", "subject": "Physik", "grade": "7", "font": "sans", "margin": "normal", "theme": "vorlage", "folderId": "k7-folder", "createdAt": "2026-11-18T08:16:01.682087+00:00", "updatedAt": "2026-11-18T08:16:01.682087+00:00", "pages": [{"id": "k7-p6", "blocks": [{"id": "k7-b71", "type": "header", "school": "Muster-Gymnasium", "subject": "Physik", "topic": "Messgeräte 2 – Temperatur messen", "showName": false, "showClass": true, "showDate": true, "variant": "vorlage"}, {"id": "k7-b72", "type": "text", "variant": "merke", "heading": "Ziel der Stunde", "body": "Du kannst eine Messreihe durchführen, Messwerte in einer Tabelle festhalten und daraus ein Diagramm zeichnen."}, {"id": "k7-b73", "type": "text", "variant": "info", "heading": "Wie misst man Temperatur?", "body": "Thermometer nutzen die **Ausdehnung** von Flüssigkeiten oder die Spannung eines Sensors. Eine Skala muss **geeicht** sein, sonst sind die Werte nicht vergleichbar."}, {"id": "k7-b74", "type": "block", "label": "A", "titel": "Versuch: Erwärmen"}, {"id": "k7-b75", "type": "versuch", "titel": "Versuch: Wasser erwärmen", "material": "Becherglas, Wasser, Thermometer, Heizplatte, Stoppuhr.", "durchfuehrung": ["200 ml Wasser in das Becherglas geben.", "Thermometer eintauchen und Starttemperatur ablesen.", "Alle 2 Minuten die Temperatur messen und notieren."], "linesB": 2, "linesA": 2, "auswertung": ""}, {"id": "k7-b76", "type": "table", "header": true, "cells": [["Zeit in min", "0", "2", "4", "6", "8", "10"], ["Temperatur in °C", "", "", "", "", "", ""]]}, {"id": "k7-b77", "type": "block", "label": "B", "titel": "Auswerten"}, {"id": "k7-b78", "type": "axes", "xLabel": "t in min", "yLabel": "T in °C", "caption": "Erwärmungskurve", "grid": true, "numbers": true, "square": false, "xMin": 0, "xMax": 10, "xStep": 2, "yMin": 0, "yMax": 100, "yStep": 10, "width": 100, "heightMM": 95, "legend": []}, {"id": "k7-b79", "type": "task", "text": "Zeichne die Messwerte in das Diagramm und beschreibe den Verlauf.", "points": "", "solution": "Die Temperatur steigt zunächst gleichmäßig an; die Kurve flacht bei Annäherung an den Siedepunkt ab.", "parts": []}, {"id": "k7-b80", "type": "task", "text": "Ein Thermometer zeigt bei Eiswasser 3 °C statt 0 °C. Was bedeutet das für alle Messwerte?", "points": "", "solution": "Das Thermometer ist falsch geeicht; alle Werte sind um 3 °C zu hoch und müssen korrigiert werden.", "parts": []}, {"id": "k7-b81", "type": "mc", "question": "Was gehört zu einer guten Messreihe?", "options": [{"text": "Mehrere Messungen und ein Mittelwert.", "correct": true}, {"text": "Nur ein einziger Wert.", "correct": false}, {"text": "Angabe ohne Einheit.", "correct": false}, {"text": "Messung ohne Gerät.", "correct": false}]}, {"id": "k7-b82", "type": "signature", "label": "Datum, Unterschrift"}]}]}];
 /* === ENDE KLASSE7-DATEN === */
 
 boot();
