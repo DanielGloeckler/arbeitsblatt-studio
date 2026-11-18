@@ -620,6 +620,8 @@
         Der Token bleibt im Browser und wird nur an api.github.com gesendet.
       </div>
 
+      <div id="gh-origin" class="text-[11px] text-slate-500"></div>
+
       <div class="grid grid-cols-2 gap-2">
         <label class="block">
           <span class="block text-[11px] font-medium text-slate-500 mb-1">Konto / Owner</span>
@@ -766,7 +768,7 @@ Eine Kraft erkennt man an ihrer Wirkung …
       <div class="flex flex-col min-h-0 md:border-r border-slate-200">
         <div class="flex-1 overflow-y-auto px-4 py-3 space-y-2.5">
 
-          <div class="grid grid-cols-2 gap-2">
+          <div class="grid grid-cols-3 gap-2">
             <label class="block">
               <span class="block text-[10px] font-semibold uppercase tracking-wider text-slate-400 mb-1">Fach</span>
               <select id="ai-subject" class="w-full text-xs px-2 py-1.5 rounded-lg border border-slate-200 bg-white">
@@ -778,6 +780,18 @@ Eine Kraft erkennt man an ihrer Wirkung …
               <select id="ai-grade" class="w-full text-xs px-2 py-1.5 rounded-lg border border-slate-200 bg-white">
                 <option>7</option><option>8</option><option>9</option><option>10</option>
                 <option>11</option><option>12</option><option>13</option>
+              </select>
+            </label>
+            <label class="block">
+              <span class="block text-[10px] font-semibold uppercase tracking-wider text-slate-400 mb-1">Layout</span>
+              <select id="pb-layout" class="w-full text-xs px-2 py-1.5 rounded-lg border border-slate-200 bg-white">
+                <option value="vorlage" selected>Vorlage (s/w)</option>
+                <option value="klassisch">Klassisch</option>
+                <option value="balken">Balken</option>
+                <option value="rahmen">Rahmen</option>
+                <option value="minimal">Minimal</option>
+                <option value="frisch">Frisch</option>
+                <option value="klar">Klar</option>
               </select>
             </label>
           </div>
@@ -4470,10 +4484,10 @@ const AI_SYSTEM = `Du erstellst Arbeitsblätter für Physik und NWT (Klassen 7�
 Antworte AUSSCHLIESSLICH mit einem einzigen JSON-Objekt, ohne Text davor/danach, ohne Markdown-Zäune.
 
 Format:
-{"title":"…","subject":"Physik"|"NWT","grade":"7"…"13","theme":"verspielt"|"freundlich"|"sachlich"|"clean","pages":[{"blocks":[…]}]}
+{"title":"…","subject":"Physik"|"NWT","grade":"7"…"13","theme":"vorlage"|"verspielt"|"freundlich"|"sachlich"|"clean","pages":[{"blocks":[…]}]}
 
 Bausteine (Feld "type"):
-- header: {school, subject, topic, showName, showClass, showDate, variant:"klassisch"|"band"|"rahmen"|"minimal"}
+- header: {school, subject, topic, showName, showClass, showDate, variant:"vorlage"|"klassisch"|"band"|"rahmen"|"minimal"}
 - text: {variant:"normal"|"merke"|"info"|"tipp"|"warnung", heading, body}
 - task: {text, points, solution, parts:[{text}]}
 - cloze: {text}   (Lücken in [eckigen Klammern])
@@ -4549,6 +4563,7 @@ function pbRead() {
     topic: pbVal('ai-topic'),
     goal: pbVal('pb-goal'),
     level: pbVal('pb-level') || 'mittel',
+    layout: pbVal('pb-layout') || 'vorlage',
     minutes: pbVal('pb-minutes'),
     points: pbVal('pb-points'),
     pages: pbVal('ai-pages') || '1',
@@ -4569,6 +4584,7 @@ function pbRestore() {
   const set = (id, v) => { const el = pbEl(id); if (el && v !== undefined && v !== null && v !== '') el.value = v; };
   set('ai-subject', st.subject); set('ai-grade', st.grade); set('ai-topic', st.topic);
   set('pb-goal', st.goal); set('pb-level', st.level); set('pb-minutes', st.minutes);
+  set('pb-layout', st.layout);
   set('pb-points', st.points); set('ai-pages', st.pages); set('ai-tasks', st.tasks);
   set('ai-extra', st.extra);
   const diff = pbEl('pb-diff');
@@ -4589,12 +4605,14 @@ function pbSetDefaults() {
 }
 
 function aiUserPrompt(st) {
+  const layout = NEW_LAYOUTS.find(l => l.id === st.layout) || NEW_LAYOUTS[0];
   const lines = [];
   lines.push(`Fach: ${st.subject}`);
   lines.push(`Klassenstufe: ${st.grade}`);
   lines.push(`Thema: ${st.topic}`);
   if (st.goal) lines.push(`Lernziel der Stunde: ${st.goal}`);
   if (st.level) lines.push(`Niveau: ${st.level} – ${PB_LEVELS[st.level] || PB_LEVELS.mittel}`);
+  lines.push(`Layout: ${layout.name} (${layout.desc}) – setze "theme": "${layout.theme}" und beim header-Baustein "variant": "${layout.header}"`);
   lines.push(`Umfang: ${st.pages} Seite(n), mindestens ${st.tasks} Aufgaben`);
   if (st.minutes) lines.push(`Zeitbedarf: etwa ${st.minutes} Minuten`);
   if (st.points) lines.push(`Gesamtpunktzahl: ${st.points} – verteile die Punkte nachvollziehbar auf die Aufgaben`);
@@ -4637,19 +4655,21 @@ async function copyPrompt() {
   }
   pbSave();
   const text = buildPromptText(st);
-  const pre = pbEl('ai-prompt-preview');
   const status = pbEl('pb-status');
-  if (pre) { pre.textContent = text; pre.classList.remove('hidden'); }
+  const pre = pbEl('ai-prompt-preview');
+  if (pre) pre.textContent = text;
 
   let ok = false;
   try { await navigator.clipboard.writeText(text); ok = true; }
   catch (e) { ok = legacyCopy(text); }
 
   if (ok) {
+    setAiStage('input');
     toast('Prompt kopiert – jetzt in einen Chatbot einfügen', 'OK');
-    if (status) status.textContent = 'Kopiert. Nächster Schritt: Antwort unten einsetzen und „Antwort prüfen“.';
-  } else if (status) {
-    status.textContent = 'Kopieren blockiert – bitte den Text oben markieren und mit Strg+C kopieren.';
+    if (status) status.textContent = 'Kopiert. Jetzt in den Chatbot einfügen, Antwort rechts einsetzen und „Antwort prüfen“.';
+  } else {
+    setAiStage('prompt');
+    if (status) status.textContent = 'Kopieren blockiert – der Prompt steht rechts, dort markieren und mit Strg+C kopieren.';
   }
   refreshIcons();
 }
@@ -4701,17 +4721,19 @@ function parsePastedAnswer() {
   const st = pbRead();
   try {
     if (status) status.textContent = 'Antwort wird geprüft …';
-    const sheet = sanitizeGeneratedSheet(extractJson(text), st.subject, st.grade);
+    const sheet = sanitizeGeneratedSheet(extractJson(text), st.subject, st.grade, st.layout);
     aiDraft = sheet;
+    setAiStage('preview');
     renderAiPreview(sheet);
     const apply = pbEl('ai-apply');
     if (apply) apply.disabled = false;
     const titleEl = pbEl('ai-preview-title');
     if (titleEl) titleEl.textContent = `${sheet.title} · ${sheet.pages.length} Seite${sheet.pages.length === 1 ? '' : 'n'}`;
     const count = sheet.pages.reduce((n, p) => n + p.blocks.length, 0);
-    if (status) status.textContent = `Gültig: ${count} Bausteine auf ${sheet.pages.length} Seite${sheet.pages.length === 1 ? '' : 'n'}. Rechts prüfen, dann „Übernehmen“.`;
+    if (status) status.textContent = `Gültig: ${count} Bausteine auf ${sheet.pages.length} Seite${sheet.pages.length === 1 ? '' : 'n'} · Layout „${layoutLabel(sheet.layout)}“.`;
     toast('Antwort gelesen – Vorschau rechts', 'OK');
   } catch (err) {
+    setAiStage('input');
     if (status) status.textContent = 'Nicht lesbar: ' + err.message;
     toast('Antwort konnte nicht gelesen werden', 'OK');
   }
@@ -4840,7 +4862,7 @@ function sanitizeBlock(raw) {
     case 'header':
       b.school = aiStr(raw.school, 80); b.subject = aiStr(raw.subject, 40); b.topic = aiStr(raw.topic, 140);
       b.showName = raw.showName !== false; b.showClass = raw.showClass !== false; b.showDate = raw.showDate !== false;
-      b.variant = ['klassisch', 'band', 'rahmen', 'minimal'].includes(raw.variant) ? raw.variant : 'klassisch';
+      b.variant = ['vorlage', 'klassisch', 'band', 'rahmen', 'minimal'].includes(raw.variant) ? raw.variant : 'vorlage';
       break;
     case 'text':
       b.variant = ['normal', 'merke', 'info', 'tipp', 'warnung', 'notiz'].includes(raw.variant) ? raw.variant : 'normal';
@@ -4912,7 +4934,15 @@ function sanitizeBlock(raw) {
   return b;
 }
 
-function sanitizeGeneratedSheet(raw, subject, grade) {
+function layoutById(id) {
+  return NEW_LAYOUTS.find(l => l.id === id) || NEW_LAYOUTS[0];
+}
+function layoutLabel(id) {
+  return layoutById(id).name;
+}
+
+function sanitizeGeneratedSheet(raw, subject, grade, layoutId) {
+  const layout = layoutById(layoutId);
   const pagesRaw = Array.isArray(raw && raw.pages) ? raw.pages.slice(0, 4) : [];
   const pages = pagesRaw.map(p => ({
     id: uid(),
@@ -4929,11 +4959,19 @@ function sanitizeGeneratedSheet(raw, subject, grade) {
     });
   }
 
+  // Layout aus dem Prompt-Ersteller hat Vorrang: so bleibt der Satz
+  // im gleichen Layout wie die gedruckte Fassung und der LaTeX-Export.
+  pages.forEach(p => p.blocks.forEach(b => {
+    if (b.type === 'header') b.variant = layout.header;
+  }));
+
   return newSheet({
+    id: uid(),
+    layout: layout.id,
     title: aiStr(raw.title, 120) || 'KI-Arbeitsblatt',
     subject: ['Physik', 'NWT'].includes(raw.subject) ? raw.subject : subject,
     grade: GRADES.includes(String(raw.grade)) ? String(raw.grade) : grade,
-    theme: ['vorlage', 'verspielt', 'freundlich', 'sachlich', 'clean'].includes(raw.theme) ? raw.theme : 'vorlage',
+    theme: layout.theme,
     pages
   });
 }
@@ -5017,7 +5055,7 @@ async function aiGenerate() {
   try {
     const raw = await aiRequest(cfg, key, aiUserPrompt(st));
     status.textContent = 'Antwort wird geprüft …';
-    aiDraft = sanitizeGeneratedSheet(extractJson(raw), st.subject, st.grade);
+    aiDraft = sanitizeGeneratedSheet(extractJson(raw), st.subject, st.grade, st.layout);
     renderAiPreview(aiDraft);
     document.getElementById('ai-apply').disabled = false;
     document.getElementById('ai-preview-title').textContent =
@@ -5224,6 +5262,11 @@ function openGh() {
   document.getElementById('gh-branch').value = cfg.branch;
   document.getElementById('gh-auto').checked = !!cfg.auto;
   document.getElementById('gh-token').value = '';
+  const originEl = document.getElementById('gh-origin');
+  if (originEl) {
+    originEl.textContent = 'Dieser Speicher: ' + location.origin + ' · ' + sheets.length +
+      ' Blätter · ' + (location.protocol === 'file:' ? 'lokale Datei (eigener Speicher!)' : 'Web-Version');
+  }
   const last = localStorage.getItem('abw.gh.last');
   ghStatus(ghToken()
     ? 'Token gespeichert.' + (last ? ' Letzte Sicherung: ' + new Date(last).toLocaleString('de-DE') : '')
