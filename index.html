@@ -601,6 +601,67 @@
 
 <div id="toast"></div>
 
+<div id="gh-modal" class="fixed inset-0 z-[80] hidden items-center justify-center bg-slate-900/40 p-4">
+  <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[92vh] flex flex-col overflow-hidden">
+    <div class="flex items-start justify-between gap-4 px-5 py-3 border-b border-slate-200">
+      <div>
+        <h3 class="font-semibold">Cloud-Sicherung (GitHub)</h3>
+        <p class="text-xs text-slate-500 mt-0.5">Speichert alle Blätter als JSON in einem eigenen Repository.</p>
+      </div>
+      <button data-act="gh-close" class="p-1.5 rounded-lg text-slate-400 hover:bg-slate-100">
+        <i data-lucide="x" class="w-4 h-4"></i>
+      </button>
+    </div>
+
+    <div class="p-5 overflow-y-auto space-y-3">
+      <div class="rounded-lg bg-amber-50 border border-amber-200 px-3 py-2 text-[11px] text-amber-800 leading-snug">
+        Empfehlung: ein <b>privates</b> Repo nur für die Daten, z. B. <code>arbeitsblatt-daten</code>.
+        Token: <b>Fine-grained</b>, nur dieses Repo, Berechtigung <b>Contents: Read and write</b>.
+        Der Token bleibt im Browser und wird nur an api.github.com gesendet.
+      </div>
+
+      <div class="grid grid-cols-2 gap-2">
+        <label class="block">
+          <span class="block text-[11px] font-medium text-slate-500 mb-1">Konto / Owner</span>
+          <input id="gh-owner" class="w-full text-sm px-2 py-1.5 rounded border border-slate-200" placeholder="DanielGloeckler">
+        </label>
+        <label class="block">
+          <span class="block text-[11px] font-medium text-slate-500 mb-1">Repository</span>
+          <input id="gh-repo" class="w-full text-sm px-2 py-1.5 rounded border border-slate-200" placeholder="arbeitsblatt-daten">
+        </label>
+        <label class="block">
+          <span class="block text-[11px] font-medium text-slate-500 mb-1">Datei</span>
+          <input id="gh-path" class="w-full text-sm px-2 py-1.5 rounded border border-slate-200" placeholder="arbeitsblaetter.json">
+        </label>
+        <label class="block">
+          <span class="block text-[11px] font-medium text-slate-500 mb-1">Branch</span>
+          <input id="gh-branch" class="w-full text-sm px-2 py-1.5 rounded border border-slate-200" placeholder="main">
+        </label>
+      </div>
+
+      <label class="block">
+        <span class="block text-[11px] font-medium text-slate-500 mb-1">Token</span>
+        <input id="gh-token" type="password" autocomplete="off" spellcheck="false"
+          class="w-full text-xs px-2 py-1.5 rounded border border-slate-200 font-mono" placeholder="github_pat_…">
+      </label>
+
+      <label class="flex items-center gap-2 text-xs text-slate-600">
+        <input type="checkbox" id="gh-auto" class="accent-teal-600">
+        Automatisch sichern (ca. 4 Sekunden nach jeder Änderung)
+      </label>
+
+      <div class="flex flex-wrap gap-2 pt-1">
+        <button data-act="gh-save" class="px-3 py-2 text-xs font-semibold rounded-lg bg-slate-900 text-white hover:bg-slate-800">Speichern &amp; testen</button>
+        <button data-act="gh-push" class="px-3 py-2 text-xs font-medium rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50">Jetzt sichern</button>
+        <button data-act="gh-pull" class="px-3 py-2 text-xs font-medium rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50">Von GitHub laden</button>
+        <button data-act="gh-token-del" class="px-3 py-2 text-xs font-medium rounded-lg border border-red-100 text-red-600 hover:bg-red-50">Token löschen</button>
+      </div>
+
+      <p id="gh-status" class="text-xs text-slate-500"></p>
+    </div>
+  </div>
+</div>
+
 <div id="texin-modal" class="fixed inset-0 z-[80] hidden items-center justify-center bg-slate-900/40 p-4">
   <div class="bg-white rounded-2xl shadow-2xl w-full max-w-3xl max-h-[92vh] flex flex-col overflow-hidden">
     <div class="flex items-start justify-between gap-4 px-5 py-3 border-b border-slate-200">
@@ -685,27 +746,114 @@ Eine Kraft erkennt man an ihrer Wirkung …
   </div>
 </div>
 
-<div id="ai-modal" class="fixed inset-0 z-[80] hidden items-center justify-center bg-slate-900/40 p-4">
-  <div class="bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[92vh] flex flex-col overflow-hidden">
-    <div class="flex items-start justify-between gap-4 px-5 py-3 border-b border-slate-200">
-      <div>
-        <h3 class="font-semibold">KI-Assistent</h3>
-        <p class="text-xs text-slate-500 mt-0.5">Prompt zusammenstellen, in einen Chatbot einfügen, Antwort zurückholen – oder direkt per API-Key erzeugen. Das Ergebnis sind normale Bausteine, die du frei bearbeitest.</p>
+<!-- AI-MODAL-START -->
+<div id="ai-modal" class="fixed inset-0 z-[80] hidden items-center justify-center bg-slate-900/40 p-3 sm:p-4">
+  <div class="bg-white rounded-2xl shadow-2xl w-full max-w-5xl h-[90vh] max-h-[840px] flex flex-col overflow-hidden">
+
+    <div class="flex items-start justify-between gap-4 px-4 sm:px-5 py-2.5 border-b border-slate-200 shrink-0">
+      <div class="min-w-0">
+        <h3 class="font-semibold flex items-center gap-2"><i data-lucide="sparkles" class="w-4 h-4 text-brand-600"></i>Arbeitsblatt mit KI</h3>
+        <p class="text-[11px] text-slate-500 mt-0.5">Links einstellen, Prompt kopieren, Antwort rechts einsetzen – ohne API-Key.</p>
       </div>
-      <button data-act="ai-close" class="p-1.5 rounded-lg text-slate-400 hover:bg-slate-100">
+      <button data-act="ai-close" class="p-1.5 rounded-lg text-slate-400 hover:bg-slate-100 shrink-0">
         <i data-lucide="x" class="w-4 h-4"></i>
       </button>
     </div>
 
-    <div class="grid md:grid-cols-2 flex-1 min-h-0">
-      <div class="p-5 overflow-y-auto space-y-3 border-r border-slate-200">
-        <details class="rounded-lg border border-slate-200 bg-slate-50/60">
-          <summary class="px-3 py-2 text-xs font-semibold text-slate-600 cursor-pointer select-none">Verbindung &amp; API-Key</summary>
-          <div class="p-3 pt-0 space-y-2">
+    <div class="flex-1 min-h-0 grid md:grid-cols-2">
+
+      <!-- ===== links: Prompt-Ersteller ===== -->
+      <div class="flex flex-col min-h-0 md:border-r border-slate-200">
+        <div class="flex-1 overflow-y-auto px-4 py-3 space-y-2.5">
+
+          <div class="grid grid-cols-2 gap-2">
             <label class="block">
-              <span class="block text-[11px] font-medium text-slate-500 mb-1">Anbieter</span>
-              <select id="ai-provider" data-act="ai-provider" class="w-full text-xs px-2 py-1.5 rounded border border-slate-200 bg-white">
-                <option value="openrouter">OpenRouter (empfohlen)</option>
+              <span class="block text-[10px] font-semibold uppercase tracking-wider text-slate-400 mb-1">Fach</span>
+              <select id="ai-subject" class="w-full text-xs px-2 py-1.5 rounded-lg border border-slate-200 bg-white">
+                <option>Physik</option><option>NWT</option>
+              </select>
+            </label>
+            <label class="block">
+              <span class="block text-[10px] font-semibold uppercase tracking-wider text-slate-400 mb-1">Klasse</span>
+              <select id="ai-grade" class="w-full text-xs px-2 py-1.5 rounded-lg border border-slate-200 bg-white">
+                <option>7</option><option>8</option><option>9</option><option>10</option>
+                <option>11</option><option>12</option><option>13</option>
+              </select>
+            </label>
+          </div>
+
+          <label class="block">
+            <span class="block text-[10px] font-semibold uppercase tracking-wider text-slate-400 mb-1">Thema</span>
+            <input id="ai-topic" class="w-full text-sm px-2.5 py-2 rounded-lg border border-slate-200"
+              placeholder="z. B. Elektrischer Widerstand">
+          </label>
+
+          <label class="block">
+            <span class="block text-[10px] font-semibold uppercase tracking-wider text-slate-400 mb-1">Lernziel <span class="font-normal normal-case text-slate-400">(optional)</span></span>
+            <textarea id="pb-goal" rows="2" class="w-full text-xs px-2.5 py-1.5 rounded-lg border border-slate-200 resize-none"
+              placeholder="z. B. Die SuS erklären den Zusammenhang von Spannung, Stromstärke und Widerstand."></textarea>
+          </label>
+
+          <div class="grid grid-cols-2 gap-2">
+            <label class="block">
+              <span class="block text-[10px] font-semibold uppercase tracking-wider text-slate-400 mb-1">Niveau</span>
+              <select id="pb-level" class="w-full text-xs px-2 py-1.5 rounded-lg border border-slate-200 bg-white">
+                <option value="leicht">Leicht – kleinschrittig</option>
+                <option value="mittel" selected>Mittel – Standard</option>
+                <option value="anspruchsvoll">Anspruchsvoll – Transfer</option>
+              </select>
+            </label>
+            <label class="block">
+              <span class="block text-[10px] font-semibold uppercase tracking-wider text-slate-400 mb-1">Zeit (min)</span>
+              <input id="pb-minutes" type="number" min="5" max="180" value="45"
+                class="w-full text-xs px-2 py-1.5 rounded-lg border border-slate-200">
+            </label>
+          </div>
+
+          <div>
+            <div class="flex items-center justify-between mb-1">
+              <span class="text-[10px] font-semibold uppercase tracking-wider text-slate-400">Bausteine</span>
+              <button type="button" data-act="prompt-defaults" class="text-[10px] text-brand-700 hover:underline">Standard</button>
+            </div>
+            <div id="pb-blocks" class="flex flex-wrap gap-1"></div>
+            <p class="text-[10px] text-slate-400 mt-1">Leer lassen? Dann entscheidet das Modell selbst.</p>
+          </div>
+
+          <details class="rounded-lg border border-slate-200">
+            <summary class="px-2.5 py-1.5 text-[11px] font-medium text-slate-600 cursor-pointer select-none">Weitere Optionen</summary>
+            <div class="px-2.5 pb-2.5 pt-1 space-y-2">
+              <div class="grid grid-cols-2 gap-2">
+                <label class="block">
+                  <span class="block text-[10px] text-slate-400 mb-0.5">Seiten</span>
+                  <input id="ai-pages" type="number" min="1" max="4" value="1" class="w-full text-xs px-2 py-1.5 rounded-lg border border-slate-200">
+                </label>
+                <label class="block">
+                  <span class="block text-[10px] text-slate-400 mb-0.5">Aufgaben</span>
+                  <input id="ai-tasks" type="number" min="1" max="8" value="4" class="w-full text-xs px-2 py-1.5 rounded-lg border border-slate-200">
+                </label>
+              </div>
+              <div class="grid grid-cols-2 gap-2 items-start">
+                <label class="block">
+                  <span class="block text-[10px] text-slate-400 mb-0.5">Punkte (optional)</span>
+                  <input id="pb-points" type="number" min="4" max="60" placeholder="z. B. 20" class="w-full text-xs px-2 py-1.5 rounded-lg border border-slate-200">
+                </label>
+                <label class="flex items-center gap-2 text-[11px] text-slate-600 pt-3.5">
+                  <input type="checkbox" id="pb-diff" class="accent-teal-600"><span>Zusatzaufgabe</span>
+                </label>
+              </div>
+              <label class="block">
+                <span class="block text-[10px] text-slate-400 mb-0.5">Zusatzwünsche</span>
+                <textarea id="ai-extra" rows="2" class="w-full text-xs px-2 py-1.5 rounded-lg border border-slate-200 resize-none"
+                  placeholder="z. B. Alltagsbezug Fahrrad, keine Formeln, Bezug zum Schulbuch"></textarea>
+              </label>
+            </div>
+          </details>
+
+          <details class="rounded-lg border border-slate-200">
+            <summary class="px-2.5 py-1.5 text-[11px] font-medium text-slate-600 cursor-pointer select-none">Direkt per API-Key erzeugen</summary>
+            <div class="px-2.5 pb-2.5 pt-1 space-y-2">
+              <select id="ai-provider" data-act="ai-provider" class="w-full text-xs px-2 py-1.5 rounded-lg border border-slate-200 bg-white">
+                <option value="openrouter">OpenRouter</option>
                 <option value="openai">OpenAI</option>
                 <option value="anthropic">Anthropic (Claude)</option>
                 <option value="google">Google Gemini</option>
@@ -713,190 +861,88 @@ Eine Kraft erkennt man an ihrer Wirkung …
                 <option value="mistral">Mistral</option>
                 <option value="custom">Anderer (OpenAI-kompatibel)</option>
               </select>
-            </label>
-            <label class="block">
-              <span class="block text-[11px] font-medium text-slate-500 mb-1">Base-URL</span>
-              <input id="ai-base" class="w-full text-xs px-2 py-1.5 rounded border border-slate-200 bg-white" placeholder="https://openrouter.ai/api/v1">
-            </label>
-            <label class="block">
-              <span class="block text-[11px] font-medium text-slate-500 mb-1">Modell</span>
-              <input id="ai-model" class="w-full text-xs px-2 py-1.5 rounded border border-slate-200 bg-white" placeholder="openai/gpt-4o-mini">
-            </label>
-            <label class="block">
-              <span class="block text-[11px] font-medium text-slate-500 mb-1">API-Key</span>
+              <input id="ai-base" class="w-full text-xs px-2 py-1.5 rounded-lg border border-slate-200 bg-white" placeholder="Base-URL, z. B. https://openrouter.ai/api/v1">
+              <input id="ai-model" class="w-full text-xs px-2 py-1.5 rounded-lg border border-slate-200 bg-white" placeholder="Modell, z. B. openai/gpt-4o-mini">
               <input id="ai-key" type="password" autocomplete="off" spellcheck="false"
-                class="w-full text-xs px-2 py-1.5 rounded border border-slate-200 bg-white font-mono" placeholder="wird nicht gespeichert, bis du es bestätigst">
-            </label>
-            <label class="flex items-start gap-2 text-[11px] text-slate-600">
-              <input type="checkbox" id="ai-persist" class="mt-0.5 accent-teal-600">
-              <span>Key auf diesem Gerät speichern (sonst nur bis zum Schließen des Tabs)</span>
-            </label>
-            <p class="text-[11px] leading-snug text-amber-700 bg-amber-50 border border-amber-200 rounded px-2 py-1.5">
-              Der Key bleibt im Browser und geht ausschließlich an die Base-URL oben. Nicht auf fremden oder schulischen Rechnern speichern. „Key löschen“ entfernt ihn sofort.
-            </p>
-            <div class="flex gap-2">
-              <button data-act="ai-save-key" class="px-3 py-1.5 text-xs font-medium rounded bg-slate-900 text-white hover:bg-slate-800">Speichern</button>
-              <button data-act="ai-test" class="px-3 py-1.5 text-xs font-medium rounded border border-slate-200 text-slate-600 hover:bg-white">Verbindung testen</button>
-              <button data-act="ai-del-key" class="px-3 py-1.5 text-xs font-medium rounded border border-slate-200 text-slate-600 hover:bg-white">Key löschen</button>
-            </div>
-            <p id="ai-key-state" class="text-[11px] text-slate-500"></p>
-          </div>
-        </details>
-
-        <div class="rounded-xl border border-slate-200">
-          <div class="flex items-center gap-2 px-3 py-2 border-b border-slate-200 bg-slate-50/70">
-            <span class="w-5 h-5 grid place-items-center rounded-full bg-brand-600 text-white text-[11px] font-bold">1</span>
-            <span class="text-xs font-semibold text-slate-600">Prompt erstellen</span>
-            <span class="ml-auto text-[11px] text-slate-400">ohne API-Key</span>
-          </div>
-
-          <div class="p-3 space-y-3">
-            <div class="grid grid-cols-2 gap-2">
-              <label class="block">
-                <span class="block text-[11px] font-medium text-slate-500 mb-1">Fach</span>
-                <select id="ai-subject" class="w-full text-sm px-2 py-1.5 rounded border border-slate-200">
-                  <option>Physik</option><option>NWT</option>
-                </select>
+                class="w-full text-xs px-2 py-1.5 rounded-lg border border-slate-200 bg-white font-mono" placeholder="API-Key">
+              <label class="flex items-start gap-2 text-[11px] text-slate-600">
+                <input type="checkbox" id="ai-persist" class="mt-0.5 accent-teal-600">
+                <span>Key auf diesem Gerät speichern (sonst nur bis zum Schließen des Tabs)</span>
               </label>
-              <label class="block">
-                <span class="block text-[11px] font-medium text-slate-500 mb-1">Klasse</span>
-                <select id="ai-grade" class="w-full text-sm px-2 py-1.5 rounded border border-slate-200">
-                  <option>7</option><option>8</option><option>9</option><option>10</option>
-                  <option>11</option><option>12</option><option>13</option>
-                </select>
-              </label>
-            </div>
-
-            <label class="block">
-              <span class="block text-[11px] font-medium text-slate-500 mb-1">Thema <span class="text-red-500">*</span></span>
-              <input id="ai-topic" class="w-full text-sm px-2 py-1.5 rounded border border-slate-200"
-                placeholder="z. B. Elektrischer Widerstand">
-            </label>
-
-            <label class="block">
-              <span class="block text-[11px] font-medium text-slate-500 mb-1">Lernziel (optional)</span>
-              <textarea id="pb-goal" rows="2" class="w-full text-sm px-2 py-1.5 rounded border border-slate-200"
-                placeholder="z. B. Die SuS erklären, wie Spannung, Stromstärke und Widerstand zusammenhängen."></textarea>
-            </label>
-
-            <div class="grid grid-cols-2 gap-2">
-              <label class="block">
-                <span class="block text-[11px] font-medium text-slate-500 mb-1">Niveau</span>
-                <select id="pb-level" class="w-full text-sm px-2 py-1.5 rounded border border-slate-200">
-                  <option value="leicht">Leicht – kleinschrittig</option>
-                  <option value="mittel" selected>Mittel – Standard</option>
-                  <option value="anspruchsvoll">Anspruchsvoll – Transfer</option>
-                </select>
-              </label>
-              <label class="block">
-                <span class="block text-[11px] font-medium text-slate-500 mb-1">Zeit (Minuten)</span>
-                <input id="pb-minutes" type="number" min="5" max="180" value="45"
-                  class="w-full text-sm px-2 py-1.5 rounded border border-slate-200">
-              </label>
-            </div>
-
-            <div>
-              <div class="flex items-center justify-between mb-1.5">
-                <span class="text-[11px] font-medium text-slate-500">Bausteine</span>
-                <button type="button" data-act="prompt-defaults" class="text-[11px] text-brand-700 hover:underline">Standard</button>
+              <p class="text-[10px] leading-snug text-amber-700 bg-amber-50 border border-amber-200 rounded px-2 py-1.5">
+                Der Key bleibt im Browser und geht nur an die Base-URL. Nicht auf schulischen Rechnern speichern.
+              </p>
+              <div class="flex flex-wrap gap-1.5">
+                <button data-act="ai-save-key" class="px-2.5 py-1.5 text-[11px] font-medium rounded bg-slate-900 text-white hover:bg-slate-800">Speichern</button>
+                <button data-act="ai-test" class="px-2.5 py-1.5 text-[11px] font-medium rounded border border-slate-200 text-slate-600 hover:bg-slate-50">Testen</button>
+                <button data-act="ai-del-key" class="px-2.5 py-1.5 text-[11px] font-medium rounded border border-slate-200 text-slate-600 hover:bg-slate-50">Löschen</button>
               </div>
-              <div id="pb-blocks" class="flex flex-wrap gap-1.5"></div>
-              <p class="text-[11px] text-slate-400 mt-1">Nichts gewählt? Dann entscheidet das Modell selbst.</p>
-            </div>
-
-            <div class="grid grid-cols-2 gap-2">
-              <label class="block">
-                <span class="block text-[11px] font-medium text-slate-500 mb-1">Seiten</span>
-                <input id="ai-pages" type="number" min="1" max="4" value="1"
-                  class="w-full text-sm px-2 py-1.5 rounded border border-slate-200">
-              </label>
-              <label class="block">
-                <span class="block text-[11px] font-medium text-slate-500 mb-1">Aufgaben</span>
-                <input id="ai-tasks" type="number" min="1" max="8" value="4"
-                  class="w-full text-sm px-2 py-1.5 rounded border border-slate-200">
-              </label>
-            </div>
-
-            <div class="grid grid-cols-2 gap-2 items-start">
-              <label class="block">
-                <span class="block text-[11px] font-medium text-slate-500 mb-1">Punkte (optional)</span>
-                <input id="pb-points" type="number" min="4" max="60" placeholder="z. B. 20"
-                  class="w-full text-sm px-2 py-1.5 rounded border border-slate-200">
-              </label>
-              <label class="flex items-start gap-2 text-[11px] text-slate-600 pt-5">
-                <input type="checkbox" id="pb-diff" class="mt-0.5 accent-teal-600">
-                <span>Zusatzaufgabe für Schnelle</span>
-              </label>
-            </div>
-
-            <label class="block">
-              <span class="block text-[11px] font-medium text-slate-500 mb-1">Zusatzwünsche (optional)</span>
-              <textarea id="ai-extra" rows="2" class="w-full text-sm px-2 py-1.5 rounded border border-slate-200"
-                placeholder="z. B. Alltagsbezug Fahrrad, keine Formeln, Bezug zum Schulbuch"></textarea>
-            </label>
-
-            <div class="flex gap-2">
-              <button data-act="prompt-copy"
-                class="flex-1 flex items-center justify-center gap-2 bg-brand-600 hover:bg-brand-700 text-white text-sm font-semibold px-3 py-2.5 rounded-lg">
-                <i data-lucide="copy" class="w-4 h-4"></i>Prompt kopieren
+              <p id="ai-key-state" class="text-[10px] text-slate-500"></p>
+              <button data-act="ai-generate" id="ai-generate"
+                class="w-full flex items-center justify-center gap-2 bg-slate-900 hover:bg-slate-800 disabled:opacity-50 text-white text-xs font-semibold px-3 py-2 rounded-lg">
+                <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>Arbeitsblatt erzeugen
               </button>
-              <button data-act="prompt-preview"
-                class="px-3 py-2.5 text-xs font-medium text-slate-600 border border-slate-200 rounded-lg hover:bg-slate-50">Ansehen</button>
+              <p id="ai-status" class="text-[11px] text-slate-500"></p>
             </div>
-            <pre id="ai-prompt-preview"
-              class="hidden max-h-44 overflow-auto text-[10px] leading-relaxed font-mono bg-slate-900 text-slate-100 p-2.5 rounded-lg whitespace-pre-wrap"></pre>
-            <p id="pb-status" class="text-[11px] text-slate-500"></p>
-          </div>
+          </details>
         </div>
 
-        <div class="rounded-xl border border-slate-200">
-          <div class="flex items-center gap-2 px-3 py-2 border-b border-slate-200 bg-slate-50/70">
-            <span class="w-5 h-5 grid place-items-center rounded-full bg-slate-900 text-white text-[11px] font-bold">2</span>
-            <span class="text-xs font-semibold text-slate-600">Antwort einfügen</span>
-          </div>
-          <div class="p-3 space-y-2">
-            <p class="text-[11px] leading-snug text-slate-500">
-              Prompt in einen Chatbot einfügen (ChatGPT, Gemini, OpenCode …) und die
-              <b>komplette Antwort</b> hier einsetzen – mit oder ohne Code-Zäune.
-            </p>
-            <textarea id="ai-paste" rows="5" spellcheck="false"
-              class="w-full text-[11px] font-mono px-2 py-1.5 rounded border border-slate-200"
-              placeholder='{"title":"…","subject":"Physik","grade":"7","pages":[{"blocks":[…]}], …}'></textarea>
-            <button data-act="prompt-parse"
-              class="w-full flex items-center justify-center gap-2 text-sm font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 px-3 py-2.5 rounded-lg">
-              <i data-lucide="clipboard-check" class="w-4 h-4"></i>Antwort prüfen
+        <div class="px-4 py-2.5 border-t border-slate-200 shrink-0 space-y-1.5">
+          <div class="flex gap-2">
+            <button data-act="prompt-copy"
+              class="flex-1 flex items-center justify-center gap-2 bg-brand-600 hover:bg-brand-700 text-white text-sm font-semibold px-3 py-2.5 rounded-lg">
+              <i data-lucide="copy" class="w-4 h-4"></i>Prompt kopieren
             </button>
-            <p id="ai-paste-status" class="text-[11px] text-slate-500"></p>
+            <button data-act="prompt-preview"
+              class="px-3 py-2.5 text-xs font-medium text-slate-600 border border-slate-200 rounded-lg hover:bg-slate-50">Ansehen</button>
           </div>
+          <p id="pb-status" class="text-[11px] text-slate-500 leading-snug"></p>
         </div>
-
-        <details class="rounded-lg border border-slate-200 bg-slate-50/60">
-          <summary class="px-3 py-2 text-xs font-semibold text-slate-600 cursor-pointer select-none">Direkt erzeugen (API-Key)</summary>
-          <div class="p-3 pt-0 space-y-2">
-            <button data-act="ai-generate" id="ai-generate"
-              class="w-full flex items-center justify-center gap-2 bg-slate-900 hover:bg-slate-800 disabled:opacity-50 text-white text-sm font-semibold px-4 py-2.5 rounded-lg">
-              <i data-lucide="sparkles" class="w-4 h-4"></i>Arbeitsblatt erzeugen
-            </button>
-            <p id="ai-status" class="text-xs text-slate-500"></p>
-          </div>
-        </details>
       </div>
 
-      <div class="p-5 overflow-y-auto bg-slate-50 min-h-0">
-        <div class="flex items-center justify-between mb-2">
-          <span class="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Vorschau</span>
-          <span id="ai-preview-title" class="text-xs text-slate-500 truncate max-w-[60%]"></span>
+      <!-- ===== rechts: Antwort & Vorschau ===== -->
+      <div class="flex flex-col min-h-0 bg-slate-50">
+        <div class="px-4 pt-3 pb-2 flex items-center gap-2 shrink-0">
+          <span id="ai-stage-label" class="text-[10px] font-semibold uppercase tracking-wider text-slate-400">Antwort einfügen</span>
+          <span id="ai-preview-title" class="ml-auto text-[11px] text-slate-500 truncate max-w-[55%]"></span>
         </div>
-        <div id="ai-preview" class="bg-white border border-slate-200 rounded-lg overflow-hidden" style="height:430px"></div>
-        <div class="mt-3 flex gap-2">
-          <button data-act="ai-apply" id="ai-apply" disabled
-            class="flex-1 text-sm font-semibold text-white bg-brand-600 hover:bg-brand-700 disabled:opacity-40 rounded-lg py-2.5">Übernehmen</button>
-          <button data-act="ai-discard" class="px-3 py-2.5 text-sm font-medium text-slate-600 border border-slate-200 rounded-lg hover:bg-white">Verwerfen</button>
+
+        <div class="flex-1 min-h-0 overflow-y-auto px-4 pb-2">
+          <div id="ai-answer-box" class="h-full flex flex-col">
+            <textarea id="ai-paste" spellcheck="false"
+              class="flex-1 w-full min-h-[120px] text-[11px] leading-relaxed font-mono px-2.5 py-2 rounded-lg border border-slate-200 bg-white resize-none"
+              placeholder='{"title":"…","subject":"Physik","grade":"7","pages":[{"blocks":[…]}]}'></textarea>
+            <p class="text-[10px] text-slate-400 mt-1">Code-Zäune sind erlaubt. Unbekannte Bausteine werden verworfen.</p>
+          </div>
+
+          <div id="ai-prompt-box" class="hidden">
+            <pre id="ai-prompt-preview" class="text-[10px] leading-relaxed font-mono bg-slate-900 text-slate-100 p-3 rounded-lg whitespace-pre-wrap"></pre>
+          </div>
+
+          <div id="ai-preview-wrap" class="hidden">
+            <div id="ai-preview" class="bg-white border border-slate-200 rounded-lg overflow-hidden"></div>
+          </div>
+        </div>
+
+        <div class="px-4 pt-2 pb-2.5 border-t border-slate-200 shrink-0">
+          <p id="ai-paste-status" class="text-[11px] text-slate-500 mb-1.5"></p>
+          <div id="ai-input-actions" class="flex gap-2">
+            <button data-act="prompt-parse"
+              class="flex-1 flex items-center justify-center gap-2 text-sm font-semibold text-slate-700 bg-slate-200/70 hover:bg-slate-200 px-3 py-2.5 rounded-lg">
+              <i data-lucide="clipboard-check" class="w-4 h-4"></i>Antwort prüfen
+            </button>
+          </div>
+          <div id="ai-preview-actions" class="hidden gap-2">
+            <button data-act="ai-apply" id="ai-apply" disabled
+              class="flex-1 text-sm font-semibold text-white bg-brand-600 hover:bg-brand-700 disabled:opacity-40 rounded-lg py-2.5">Übernehmen</button>
+            <button data-act="ai-discard" class="px-3 py-2.5 text-sm font-medium text-slate-600 border border-slate-200 rounded-lg hover:bg-white">Verwerfen</button>
+          </div>
         </div>
       </div>
     </div>
   </div>
 </div>
+<!-- AI-MODAL-END -->
 
 <div id="tex-modal" class="fixed inset-0 z-[80] hidden items-center justify-center bg-slate-900/40 p-4">
   <div class="bg-white rounded-2xl shadow-2xl w-full max-w-3xl flex flex-col max-h-[86vh]">
@@ -1023,6 +1069,7 @@ function persist() {
       version: 2, seeded: true, savedAt: nowISO(), sheets, folders, prefs
     }));
     setSaveState('saved');
+    scheduleGhPush();
     return true;
   } catch (err) {
     setSaveState('error');
@@ -2269,6 +2316,9 @@ function renderDashboard() {
           </div>
         </div>
         <div class="flex-1"></div>
+        <button data-act="gh-open" class="hidden sm:flex items-center gap-2 text-sm font-medium text-slate-600 hover:text-slate-900 px-3 py-2 rounded-lg hover:bg-slate-100" title="Cloud-Sicherung (GitHub)">
+          <i data-lucide="cloud" class="w-4 h-4"></i><span class="hidden md:inline">Cloud</span>
+        </button>
         <button data-act="import" class="hidden sm:flex items-center gap-2 text-sm font-medium text-slate-600 hover:text-slate-900 px-3 py-2 rounded-lg hover:bg-slate-100">
           <i data-lucide="upload" class="w-4 h-4"></i><span class="hidden md:inline">Backup laden</span>
         </button>
@@ -4604,16 +4654,39 @@ async function copyPrompt() {
   refreshIcons();
 }
 
+function setAiStage(stage) {
+  const inputBox = pbEl('ai-answer-box');
+  const promptBox = pbEl('ai-prompt-box');
+  const previewWrap = pbEl('ai-preview-wrap');
+  const inputActions = pbEl('ai-input-actions');
+  const previewActions = pbEl('ai-preview-actions');
+  const stageLabel = pbEl('ai-stage-label');
+  const isInput = stage === 'input';
+  const isPrompt = stage === 'prompt';
+  const isPreview = stage === 'preview';
+
+  if (inputBox) inputBox.classList.toggle('hidden', !isInput);
+  if (promptBox) promptBox.classList.toggle('hidden', !isPrompt);
+  if (previewWrap) previewWrap.classList.toggle('hidden', !isPreview);
+  if (inputActions) inputActions.classList.toggle('hidden', !isInput);
+  if (previewActions) {
+    previewActions.classList.toggle('hidden', !isPreview);
+    previewActions.classList.toggle('flex', isPreview);
+  }
+  if (stageLabel) stageLabel.textContent = isPreview ? 'Vorschau' : (isPrompt ? 'Prompt' : 'Antwort einfügen');
+}
+
 function togglePromptPreview() {
-  const pre = pbEl('ai-prompt-preview');
-  if (!pre) return;
-  if (pre.classList.contains('hidden')) {
+  const box = pbEl('ai-prompt-box');
+  if (!box) return;
+  if (box.classList.contains('hidden')) {
     const st = pbRead();
     if (!st.topic) { toast('Bitte zuerst ein Thema eintragen', 'OK'); return; }
-    pre.textContent = buildPromptText(st);
-    pre.classList.remove('hidden');
+    const pre = pbEl('ai-prompt-preview');
+    if (pre) pre.textContent = buildPromptText(st);
+    setAiStage('prompt');
   } else {
-    pre.classList.add('hidden');
+    setAiStage('input');
   }
 }
 
@@ -5068,8 +5141,205 @@ function createFromNew() {
 }
 
 /* ==========================================================================
-   10e. LaTeX-Import
+   10f. Cloud-Sicherung über GitHub
    ========================================================================== */
+const GH_CFG_KEY = 'abw.gh';
+const GH_TOKEN_KEY = 'abw.gh.token';
+
+let ghTimer = null;
+let ghBusy = false;
+
+function ghCfg() {
+  try {
+    return Object.assign({
+      owner: '', repo: 'arbeitsblatt-daten', path: 'arbeitsblaetter.json', branch: 'main', auto: false
+    }, JSON.parse(localStorage.getItem(GH_CFG_KEY) || '{}'));
+  } catch {
+    return { owner: '', repo: 'arbeitsblatt-daten', path: 'arbeitsblaetter.json', branch: 'main', auto: false };
+  }
+}
+function ghSaveCfg(patch) {
+  const cfg = { ...ghCfg(), ...patch };
+  localStorage.setItem(GH_CFG_KEY, JSON.stringify(cfg));
+  return cfg;
+}
+function ghToken() { return localStorage.getItem(GH_TOKEN_KEY) || ''; }
+function ghSetToken(t) { localStorage.setItem(GH_TOKEN_KEY, t); }
+function ghClearToken() { localStorage.removeItem(GH_TOKEN_KEY); }
+
+function b64encodeUtf8(str) {
+  const bytes = new TextEncoder().encode(str);
+  let bin = '';
+  bytes.forEach(b => { bin += String.fromCharCode(b); });
+  return btoa(bin);
+}
+function b64decodeUtf8(b64) {
+  const bin = atob(String(b64).replace(/\s/g, ''));
+  const bytes = Uint8Array.from(bin, c => c.charCodeAt(0));
+  return new TextDecoder().decode(bytes);
+}
+
+async function ghApi(path, opts = {}) {
+  const token = ghToken();
+  if (!token) throw new Error('Kein Token gespeichert');
+  let res;
+  try {
+    res = await fetch('https://api.github.com' + path, {
+      ...opts,
+      headers: {
+        'Accept': 'application/vnd.github+json',
+        'Authorization': 'Bearer ' + token,
+        'X-GitHub-Api-Version': '2022-11-28',
+        ...(opts.headers || {})
+      }
+    });
+  } catch (e) {
+    throw new Error('Netzwerk/CORS – Internet prüfen');
+  }
+  if (!res.ok) {
+    let detail = '';
+    try { detail = (await res.text()).slice(0, 160); } catch (e) {}
+    if (res.status === 401) throw new Error('Token ungültig (401)');
+    if (res.status === 403) throw new Error('Kein Zugriff (403) – Token-Rechte prüfen');
+    if (res.status === 404) throw new Error('Repo oder Datei nicht gefunden (404)');
+    throw new Error('GitHub ' + res.status + (detail ? ' – ' + detail : ''));
+  }
+  return res.status === 204 ? null : res.json();
+}
+
+function ghStatus(text, err) {
+  const el = document.getElementById('gh-status');
+  if (!el) return;
+  el.textContent = text;
+  el.className = 'text-xs ' + (err ? 'text-red-600' : 'text-slate-500');
+}
+
+function openGh() {
+  const modal = document.getElementById('gh-modal');
+  if (!modal) return;
+  const cfg = ghCfg();
+  document.getElementById('gh-owner').value = cfg.owner;
+  document.getElementById('gh-repo').value = cfg.repo;
+  document.getElementById('gh-path').value = cfg.path;
+  document.getElementById('gh-branch').value = cfg.branch;
+  document.getElementById('gh-auto').checked = !!cfg.auto;
+  document.getElementById('gh-token').value = '';
+  const last = localStorage.getItem('abw.gh.last');
+  ghStatus(ghToken()
+    ? 'Token gespeichert.' + (last ? ' Letzte Sicherung: ' + new Date(last).toLocaleString('de-DE') : '')
+    : 'Noch kein Token gespeichert.');
+  modal.classList.remove('hidden');
+  modal.classList.add('flex');
+}
+
+function closeGh() {
+  const modal = document.getElementById('gh-modal');
+  if (!modal) return;
+  modal.classList.add('hidden');
+  modal.classList.remove('flex');
+}
+
+function ghReadForm() {
+  return {
+    owner: document.getElementById('gh-owner').value.trim(),
+    repo: document.getElementById('gh-repo').value.trim(),
+    path: document.getElementById('gh-path').value.trim() || 'arbeitsblaetter.json',
+    branch: document.getElementById('gh-branch').value.trim() || 'main',
+    auto: document.getElementById('gh-auto').checked
+  };
+}
+
+async function ghSaveSettings() {
+  const tokenInput = document.getElementById('gh-token');
+  const t = tokenInput.value.trim();
+  if (t) ghSetToken(t);
+  tokenInput.value = '';
+  const cfg = ghSaveCfg(ghReadForm());
+  if (!cfg.owner || !cfg.repo) { ghStatus('Bitte Konto und Repository angeben.', true); return; }
+  if (!ghToken()) { ghStatus('Bitte einen Token eintragen.', true); return; }
+  ghStatus('Prüfe Verbindung …');
+  try {
+    const repo = await ghApi(`/repos/${cfg.owner}/${cfg.repo}`);
+    ghStatus(`Verbunden mit ${repo.full_name} (${repo.private ? 'privat' : 'öffentlich'}).`, false);
+  } catch (err) {
+    ghStatus('Test fehlgeschlagen: ' + err.message, true);
+  }
+}
+
+function ghBackupJson() {
+  return JSON.stringify({
+    app: 'arbeitsblatt-studio', version: 2, exportedAt: nowISO(), sheets, folders, prefs
+  }, null, 2);
+}
+
+async function ghPush(silent = false) {
+  const cfg = ghCfg();
+  if (!ghToken()) { if (!silent) ghStatus('Kein Token gespeichert.', true); return; }
+  if (!cfg.owner || !cfg.repo) { if (!silent) ghStatus('Konto/Repo fehlt.', true); return; }
+  if (ghBusy) return;
+  ghBusy = true;
+  if (!silent) ghStatus('Sichere auf GitHub …');
+
+  const url = `/repos/${cfg.owner}/${cfg.repo}/contents/${cfg.path}`;
+  try {
+    let sha = null;
+    try {
+      const cur = await ghApi(`${url}?ref=${encodeURIComponent(cfg.branch)}`);
+      sha = cur.sha;
+    } catch (e) {
+      if (!String(e.message).includes('404')) throw e;
+    }
+    await ghApi(url, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        message: 'Arbeitsblätter sichern (' + new Date().toISOString().slice(0, 16).replace('T', ' ') + ')',
+        content: b64encodeUtf8(ghBackupJson()),
+        branch: cfg.branch,
+        ...(sha ? { sha } : {})
+      })
+    });
+    localStorage.setItem('abw.gh.last', nowISO());
+    if (!silent) ghStatus('Gesichert um ' + new Date().toLocaleTimeString('de-DE') + '.', false);
+  } catch (err) {
+    ghStatus('Sicherung fehlgeschlagen: ' + err.message, true);
+    if (silent) console.warn('GitHub-Sicherung:', err.message);
+  } finally {
+    ghBusy = false;
+  }
+}
+
+function scheduleGhPush() {
+  const cfg = ghCfg();
+  if (!cfg.auto || !ghToken() || !cfg.owner || !cfg.repo) return;
+  clearTimeout(ghTimer);
+  ghTimer = setTimeout(() => ghPush(true), 4000);
+}
+
+async function ghPull() {
+  const cfg = ghCfg();
+  if (!ghToken()) { ghStatus('Kein Token gespeichert.', true); return; }
+  if (!cfg.owner || !cfg.repo) { ghStatus('Konto/Repo fehlt.', true); return; }
+  ghStatus('Lade von GitHub …');
+  try {
+    const file = await ghApi(`/repos/${cfg.owner}/${cfg.repo}/contents/${cfg.path}?ref=${encodeURIComponent(cfg.branch)}`);
+    const data = JSON.parse(b64decodeUtf8(file.content));
+    const incoming = Array.isArray(data.sheets) ? data.sheets : [];
+    if (!incoming.length) throw new Error('keine Blätter in der Datei');
+    if (!confirm(`Stand von GitHub übernehmen?\n\n${incoming.length} Blätter ersetzen die lokalen.`)) {
+      ghStatus('Abgebrochen.');
+      return;
+    }
+    sheets = incoming.map(migrateSheet);
+    folders = Array.isArray(data.folders) ? data.folders : [];
+    persist();
+    closeGh();
+    renderDashboard();
+    toast('Von GitHub geladen', 'OK');
+  } catch (err) {
+    ghStatus('Laden fehlgeschlagen: ' + err.message, true);
+  }
+}
 function cleanLatexInline(s) {
   const maths = [];
   let t = String(s || '');
@@ -5777,8 +6047,19 @@ document.addEventListener('click', (e) => {
       break;
     }
 
-    case 'ai-open': openAi(); break;
-    case 'ai-close': closeAi(); break;
+    case 'gh-open': openGh(); break;
+    case 'gh-close': closeGh(); break;
+    case 'gh-save': ghSaveSettings(); break;
+    case 'gh-push': ghPush(false); break;
+    case 'gh-pull': ghPull(); break;
+    case 'gh-token-del': {
+      ghClearToken();
+      const st = document.getElementById('gh-status');
+      if (st) { st.textContent = 'Token gelöscht.'; st.className = 'text-xs text-slate-500'; }
+      break;
+    }
+
+    case 'ai-open': openAi(); break;    case 'ai-close': closeAi(); break;
     case 'prompt-copy': copyPrompt(); break;
     case 'prompt-preview': togglePromptPreview(); break;
     case 'prompt-parse': parsePastedAnswer(); break;

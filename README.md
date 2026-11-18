@@ -160,8 +160,7 @@ Daraus folgt:
 ## KI-Assistent
 
 - Button **„KI"** im Dashboard. Einstellungen: Base-URL, Modell, API-Key.
-  **„Verbindung testen"** prüft Key und Modell mit einer Mini-Anfrage.
-- Standard ist **OpenRouter** (`https://openrouter.ai/api/v1`, Modell
+  **„Verbindung testen"** prüft Key und Modell mit einer Mini-Anfrage.- Standard ist **OpenRouter** (`https://openrouter.ai/api/v1`, Modell
   `openai/gpt-4o-mini`) – läuft direkt aus dem Browser. Jeder OpenAI-kompatible
   Anbieter funktioniert.
 - Der Key wird **nie** in die Datei geschrieben, nie geloggt, nie ins Backup
@@ -171,6 +170,23 @@ Daraus folgt:
 - Die Antwort wird **streng geprüft** (nur bekannte Bausteintypen, Längen- und
   Zahlenlimits), dann als Vorschau gezeigt. Erst „Übernehmen" legt das Blatt an.
 - Inhalt immer fachlich prüfen – das Modell kann Fehler erfinden.
+
+## Cloud-Sicherung (GitHub)
+
+Optional: Die App kann den kompletten Bestand als JSON in ein **eigenes** Repository
+schreiben – automatisch nach jeder Änderung.
+
+1. Auf GitHub ein **privates** Repo anlegen, z. B. `arbeitsblatt-daten`.
+2. **Fine-grained Token** erstellen: nur dieses Repo, Berechtigung
+   **Contents: Read and write**.
+3. In der App: **Cloud** → Konto, Repo, Datei (`arbeitsblaetter.json`), Branch,
+   Token → **Speichern & testen** → **Jetzt sichern**.
+4. Optional **„Automatisch sichern"** (ca. 4 s nach jeder Änderung).
+
+- Der Token liegt nur im Browser (`abw.gh.token`), nie im Repo oder im Backup.
+- **„Von GitHub laden"** ersetzt die lokalen Blätter durch den Cloud-Stand
+  (mit Rückfrage).
+- Die Webseite selbst bleibt unverändert – nur die Datendatei wird geschrieben.
 
 ## Technik
 
